@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="kk" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Абай Құнанбайұлы — Ашық сабақ</title>
+    <!-- Tailwind CSS v4 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        void: '#000000',
+                        'bone-white': '#ffffff',
+                        'ash-gray': '#9a9a9a',
+                        'silver-mist': '#bdbdbd',
+                        'electric-iris': '#8052ff',
+                        'saffron-spark': '#ffb829',
+                        'deep-verdant': '#15846e',
+                    },
+                    fontFamily: {
+                        pp: ['"Inter"', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;700&display=swap');
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        /* Custom scrollbar for dark aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8052ff;
+            border-radius: 9999px;
+        }
+        .display-title {
+            letter-spacing: -0.04em;
+        }
+    </style>
+</head>
+<body class="bg-void text-bone-white antialiased min-h-screen flex flex-col justify-between selection:bg-electric-iris selection:text-white">
+
+    <header class="w-full border-b border-white/10 px-6 py-4 flex items-center justify-between max-w-[1280px] mx-auto z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-electric-iris to-deep-verdant flex items-center justify-center">
+                <span class="text-xs font-bold text-white">АҚ</span>
+            </div>
+            <span class="text-sm font-semibold tracking-wider uppercase text-bone-white">АБАЙ ҚҰНАНБАЙҰЛЫ — АШЫҚ САБАҚ</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-ash-gray">
+            <a href="#hero" class="hover:text-bone-white transition-colors">Басты бет</a>
+            <a href="#sections" class="hover:text-bone-white transition-colors">Сабақ бөлімдері</a>
+            <a href="#interactive" class="hover:text-bone-white transition-colors">Интерактив</a>
+        </nav>
+        <button onclick="scrollToSections()" class="bg-electric-iris text-white px-5 py-2.5 rounded-[22.5px] text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-electric-iris/20 cursor-pointer">
+            Сабақты бастау
+        </button>
+    </header>
+
+    <main class="flex-grow max-w-[1280px] mx-auto px-6 py-12 md:py-20 w-full" id="hero">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Column: Oversized typography -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                <div class="inline-flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-saffron-spark animate-pulse"></span>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-saffron-spark">ӘДЕБИЕТ ПӘНІ • АШЫҚ САБАҚ</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl lg:text-[78px] font-normal leading-[1.1] display-title text-bone-white">
+                    Ақыл, қайрат, жүректі бірдей ұста.
+                </h1>
+                
+                <p class="text-lg font-extralight text-silver-mist max-w-[540px] leading-relaxed">
+                    Хкім Абайдың қара сөздері мен өлеңдері арқылы оқушылардың танымдық белсенділігін арттыруға арналған бірегей интерактивті ашық сабақ платформасы.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-4 pt-4">
+                    <button onclick="scrollToSections()" class="bg-electric-iris text-white px-6 py-3.5 rounded-[22.5px] text-sm font-semibold uppercase tracking-wider hover:scale-105 transition-all shadow-xl shadow-electric-iris/30 cursor-pointer">
+                        Барлық бөлімдерді ашу
+                    </button>
+                    <button onclick="openRandomQuote()" class="bg-transparent border border-white/20 text-bone-white px-6 py-3.5 rounded-[22.5px] text-sm font-semibold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">
+                        Нақыл сөз оқу
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Pixar style Abai Portrait -->
+            <div class="lg:col-span-5 relative flex justify-center">
+                <div class="relative w-full max-w-[480px] aspect-[4/3] rounded-[24px] overflow-hidden border border-white/10 shadow-2xl group">
+                    <img src="Изображение ChatGPT 28 сент. 2026 г., 16_34_23.png" alt="Абай Құнанбайұлы Pixar стилінде" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://placehold.co/600x450/111111/8052ff?text=Abai+Pixar+Style'">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest text-saffron-spark font-bold">Интерактивті портрет</span>
+                            <h3 class="text-lg font-normal text-white">Абай Құнанбайұлы (Pixar анимация стилінде)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <section class="mt-28" id="sections">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-saffron-spark">САБАҚТЫҢ КЕЗЕҢДЕРІ</span>
+                    <h2 class="text-3xl md:text-5xl font-normal display-title text-bone-white mt-2">Интерактивті бөлімдер</h2>
+                </div>
+                <p class="text-sm text-ash-gray max-w-sm">Төмендегі батырмаларды басу арқылы сабақтың әрбір кезеңінің тапсырмалары мен материалдарын ашыңыз.</p>
+            </div>
+
+            <!-- Section Buttons Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <button onclick="selectSection(1)" id="btn-1" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">01</span>
+                    <span class="text-sm font-semibold text-white">Психологиялық ахуал</span>
+                </button>
+
+                <button onclick="selectSection(2)" id="btn-2" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">02</span>
+                    <span class="text-sm font-semibold text-white">Топқа бөлу</span>
+                </button>
+
+                <button onclick="selectSection(3)" id="btn-3" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">03</span>
+                    <span class="text-sm font-semibold text-white">Өткен тақырыпты қайталау</span>
+                </button>
+
+                <button onclick="selectSection(4)" id="btn-4" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">04</span>
+                    <span class="text-sm font-semibold text-white">Жаңа тақырып</span>
+                </button>
+
+                <button onclick="selectSection(5)" id="btn-5" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">05</span>
+                    <span class="text-sm font-semibold text-white">Топтық жұмыс</span>
+                </button>
+
+                <button onclick="selectSection(6)" id="btn-6" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">06</span>
+                    <span class="text-sm font-semibold text-white">Жұптық жұмыс</span>
+                </button>
+
+                <button onclick="selectSection(7)" id="btn-7" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">07</span>
+                    <span class="text-sm font-semibold text-white">Сергіту сәті</span>
+                </button>
+
+                <button onclick="selectSection(8)" id="btn-8" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">08</span>
+                    <span class="text-sm font-semibold text-white">Жеке жұмыс</span>
+                </button>
+
+                <button onclick="selectSection(9)" id="btn-9" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">09</span>
+                    <span class="text-sm font-semibold text-white">Кері байланыс</span>
+                </button>
+
+                <button onclick="selectSection(10)" id="btn-10" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
+                    <span class="text-xs text-saffron-spark font-mono font-bold">10</span>
+                    <span class="text-sm font-semibold text-white">Бағалау</span>
+                </button>
+            </div>
+
+            <div id="content-display" class="mt-10 p-8 md:p-12 rounded-[24px] border border-electric-iris/40 bg-black/80 shadow-2xl relative overflow-hidden transition-all">
+                <div class="absolute -right-20 -top-20 w-60 h-60 bg-electric-iris/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div id="dynamic-content">
+                    <!-- Default loaded section 1 -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full bg-electric-iris/20 text-electric-iris text-xs font-semibold uppercase tracking-wider">Бөлім 01</span>
+                            <h3 class="text-2xl md:text-3xl font-normal text-white">Психологиялық ахуал: «Жүректен жүрекке»</h3>
+                        </div>
+                        <p class="text-silver-mist text-lg font-extralight leading-relaxed">
+                            Оқушылар шеңбер құрып тұрады. Абайдың «Адамның бір қызығы бала деген» өлеңінің шумақтарын бір-біріне айту арқылы жақсы тілектер тілейді және сабаққа жағымды көңіл-күй қалыптастырады.
+                        </p>
+                        <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+                            <h4 class="text-xs uppercase tracking-wider text-saffron-spark font-semibold mb-2">Мұғалімге нұсқау:</h4>
+                            <p class="text-sm text-ash-gray">«Бүгінгі сабағымыз ұлы ақын Абай Құнанбайұлының шығармашылығына арналады. Әрқайсыңыздың жүректеріңізде үлкен сәуле бар, соны бүгінгі сабақта көрсетіңіздер».</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-28 py-16 border-t border-white/10" id="interactive">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-saffron-spark">АБАЙДЫҢ ДАНАЛЫҒЫ</span>
+                    <h2 class="text-3xl md:text-4xl font-normal display-title text-bone-white mt-2">Қара сөздер интерактивті орталығы</h2>
+                    <p class="text-silver-mist text-lg font-extralight mt-4">
+                        Абайдың әрбір қара сөзі — өмірлік терең философия. Төмендегі батырманы басып, кездейсоқ қара сөз үзіндісін оқып, ой түйіңіз.
+                    </p>
+                    <div class="mt-6">
+                        <button onclick="openRandomQuote()" class="bg-electric-iris text-white px-6 py-3.5 rounded-[22.5px] text-sm font-semibold uppercase tracking-wider hover:opacity-90 transition-all cursor-pointer">
+                            Жаңа нақыл сөз алу
+                        </button>
+                    </div>
+                </div>
+                <div class="p-8 rounded-[24px] border border-white/10 bg-white/[0.02] relative">
+                    <span class="text-4xl text-electric-iris font-serif absolute top-4 left-6">“</span>
+                    <p id="quote-text" class="text-lg font-extralight text-bone-white italic pt-4 pl-4 leading-relaxed">
+                        «Адам баласы адам баласынан ақыл, ғылым, ар, мінез деген нәрселермен озады.»
+                    </p>
+                    <p class="text-xs text-saffron-spark font-semibold uppercase tracking-wider mt-6 pl-4">— Абайдың он жетінші қара сөзінен</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-white/10 py-8 px-6 max-w-[1280px] mx-auto w-full flex flex-col sm:flex-row items-center justify-between text-xs text-ash-gray gap-4">
+        <p>© 2026 Абай Құнанбайұлы ашық сабақ веб-қосымшасы. Барлық құқықтар қорғалған.</p>
+        <div class="flex items-center gap-6">
+            <span class="text-bone-white">Dala Style Design Reference</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-electric-iris"></span>
+            <span class="text-saffron-spark">Pixar Art Edition</span>
+        </div>
+    </footer>
+
+    <script>
+        const sectionsData = {
+            1: {
+                title: "Психологиялық ахуал: «Жүректен жүрекке»",
+                desc: "Оқушылар шеңбер құрып тұрады. Абайдың «Адамның бір қызығы бала деген» өлеңінің шумақтарын бір-біріне айту арқылы жақсы тілектер тілейді және сабаққа жағымды көңіл-күй қалыптастырады.",
+                instruction: "«Бүгінгі сабағымыз ұлы ақын Абай Құнанбайұлының шығармашылығына арналады. Әрқайсыңыздың жүректеріңізде үлкен сәуле бар, соны бүгінгі сабақта көрсетіңіздер»."
+            },
+            2: {
+                title: "Топқа бөлу: «Абайдың қара сөздері»",
+                desc: "Оқушылар интерактивті түрде 3 топқа бөлінеді: 1-топ «Ғылым», 2-топ «Ақыл», 3-топ «Жүрек». Әр топ ақынның қағидаттары бойынша топтасады.",
+                instruction: "Әр топ өз атауына сәйкес Абайдың өлеңдерінен немесе қара сөздерінен дәйексөз таңдап, қорғайды."
+            },
+            3: {
+                title: "Өткен тақырыпты қайталау: «Блиц-сұрақтар»",
+                desc: "Абай Құнанбайұлының өмірбаяны мен алдыңғы сабақтарда өткен шығармалары бойынша интерактивті сұрақ-жауап кезеңі.",
+                instruction: "1. Абай қай жылы дүниеге келді?\n2. Әкесі мен анасының есімі кім?\n3. Абайдың негізін салған ән-күйлері қандай?"
+            },
+            4: {
+                title: "Жаңа тақырып: «Абай – дана, Абай – дара»",
+                desc: "Абайдың ағартушылық көзқарастары, поэзиясы мен философиялық ойларының маңызы туралы жаңа мультимедиялық түсіндірме.",
+                instruction: "Тақырып бойынша интерактивті бейнематериал көрсетіліп, негізгі терминдер дәптерге жазылады."
+            },
+            5: {
+                title: "Топтық жұмыс: «ПОСТ» әдісі",
+                desc: "Әр топ Абайдың қара сөздеріне талдау жасап, постер немесе сызба жасайды.\n• 1-топ: Білім және ғылым туралы;\n• 2-топ: Адамгершілік пен ар-ұят туралы;\n• 3-топ: Еңбек және кәсіп туралы.",
+                instruction: "Топ мүшелері өз ойларын ортаға салып, ортақ постер қорғайды (уақыты: 5 минут)."
+            },
+            6: {
+                title: "Жұптық жұмыс: «Ойлан, жұптас, пікірлас»",
+                desc: "Жұптар Абайдың «Жаз» немесе «Қыс» өлеңдерінен үзінді оқып, көркемдік ерекшеліктерін (метафора, теңеу, эпитет) табады.",
+                instruction: "Өлең жолдарындағы көркемдік құралдарды тауып, бір-біріне түсіндіреді."
+            },
+            7: {
+                title: "Сергіту сәті: «Көзімнің қарасы» әуенімен",
+                desc: "Оқушылар орнынан тұрып, Абайдың әйгілі «Көзімнің қарасы» әнінің әуеніне жеңіл гимнастикалық және сергіту жаттығуларын жасайды.",
+                instruction: "Денені босаңсытып, көз бен мойын бұлшықеттеріне арналған жаттығулар орындалады."
+            },
+            8: {
+                title: "Жеке жұмыс: «Абайға хат» немесе Эссе",
+                desc: "Әр оқушы өзіне әсер еткен Абайдың бір өлеңі немесе қара сөзі туралы 5-7 сөйлемнен тұратын шағын эссе немесе ой-толғау жазады.",
+                instruction: "Өз ойын еркін, шынайы жеткізу бағаланады."
+            },
+            9: {
+                title: "Кері байланыс: «Абайдың бес асыл ісі» ағашы",
+                desc: "Сабақ соңында оқушылар өз стикерлерін ағашқа жабыстыру арқылы бүгінгі сабақтан алған әсерлерін көрсетеді.",
+                instruction: "«Бүгін мен не үйрендім? Маған не ерекше ұнады?» сұрақтарына жауап береді."
+            },
+            10: {
+                title: "Бағалау: «Жұлдызды сәт»",
+                desc: "Белсенді қатысқан оқушылар мен топтар өзара және мұғалім тарапынан мадақтау сөздерімен, бағалау парақшалары арқылы бағаланады.",
+                instruction: "Үй тапсырмасы: Абайдың кез келген өлеңін жатқа оқуға дайындалып келу."
+            }
+        };
+
+        function selectSection(id) {
+            // Remove active state from all buttons
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.getElementById('btn-' + i);
+                if (btn) {
+                    btn.classList.remove('border-electric-iris', 'bg-white/[0.08]');
+                    btn.classList.add('border-white/10', 'bg-white/[0.02]');
+                }
+            }
+
+            // Add active state to selected button
+            const activeBtn = document.getElementById('btn-' + id);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-white/10', 'bg-white/[0.02]');
+                activeBtn.classList.add('border-electric-iris', 'bg-white/[0.08]');
+            }
+
+            // Update content display
+            const data = sectionsData[id];
+            const contentDiv = document.getElementById('dynamic-content');
+            contentDiv.innerHTML = `
+                <div class="space-y-6 animate-fadeIn">
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 rounded-full bg-electric-iris/20 text-electric-iris text-xs font-semibold uppercase tracking-wider">Бөлім ${id < 10 ? '0' + id : id}</span>
+                        <h3 class="text-2xl md:text-3xl font-normal text-white">${data.title}</h3>
+                    </div>
+                    <p class="text-silver-mist text-lg font-extralight leading-relaxed whitespace-pre-line">
+                        ${data.desc}
+                    </p>
+                    <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+                        <h4 class="text-xs uppercase tracking-wider text-saffron-spark font-semibold mb-2">Тапсырма / нұсқау:</h4>
+                        <p class="text-sm text-ash-gray whitespace-pre-line">${data.instruction}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        const quotes = [
+            { text: "«Адам баласы адам баласынан ақыл, ғылым, ар, мінез деген нәрселермен озады.»", ref: "Абайдың он жетінші қара сөзі" },
+            { text: "«Арсыздық — өнер емес, әрбір істің өз жөні бар.»", ref: "Абайдың қара сөздерінен" },
+            { text: "«Бәрін біл, босқа жүрме, мақтан қума.»", ref: "Абай өлеңдерінен" },
+            { text: "«Ғылымды іздеп, дүниені көздеп, екі жаққа жол тартпа.»", ref: "Абайдың отыз сегізінші қара сөзі" },
+            { text: "«Жалындап жанған жүрек қана әлемді нұрландыра алады.»", ref: "Абайдың философиялық толғауларынан" }
+        ];
+
+        function openRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const q = quotes[randomIndex];
+            document.getElementById('quote-text').innerText = q.text;
+            document.querySelector('#quote-text + p').innerText = "— " + q.ref;
+        }
+
+        function scrollToSections() {
+            document.getElementById('sections').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize with section 1 on load
+        window.onload = function() {
+            selectSection(1);
+        };
+    </script>
+</body>
+</html>
