@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="kk" class="dark">
+<html lang="kk" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Абай Құнанбайұлы — Ашық сабақ</title>
-    <!-- Tailwind CSS v4 CDN -->
+    <title>«Дәмді сәт» — Тағам және азық-түлік ысырабын азайту платформасы</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -12,339 +12,1709 @@
             theme: {
                 extend: {
                     colors: {
-                        void: '#000000',
-                        'bone-white': '#ffffff',
-                        'ash-gray': '#9a9a9a',
-                        'silver-mist': '#bdbdbd',
-                        'electric-iris': '#8052ff',
-                        'saffron-spark': '#ffb829',
-                        'deep-verdant': '#15846e',
+                        brand: {
+                            dark: '#0A3A2A',   /* қою жасыл */
+                            DEFAULT: '#105C44',
+                            light: '#1B8261',  /* ашық жасыл */
+                            accent: '#F4A261', /* жылы сарғыш */
+                            cream: '#FAF6EE',  /* кілегей түсті ақ */
+                        }
                     },
                     fontFamily: {
-                        pp: ['"Inter"', 'sans-serif'],
-                    },
+                        sans: ['Inter', 'sans-serif'],
+                    }
                 }
             }
         }
     </script>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;700&display=swap');
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        /* Custom scrollbar for dark aesthetic */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #8052ff;
-            border-radius: 9999px;
-        }
-        .display-title {
-            letter-spacing: -0.04em;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #FAF6EE; }
+        .dark ::-webkit-scrollbar-track { background: #0A3A2A; }
+        ::-webkit-scrollbar-thumb { background: #1B8261; border-radius: 4px; }
+        .leaflet-container { width: 100%; height: 100%; border-radius: 1rem; z-index: 10; }
     </style>
 </head>
-<body class="bg-void text-bone-white antialiased min-h-screen flex flex-col justify-between selection:bg-electric-iris selection:text-white">
+<body class="bg-brand-cream dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-300">
 
-    <header class="w-full border-b border-white/10 px-6 py-4 flex items-center justify-between max-w-[1280px] mx-auto z-50">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-electric-iris to-deep-verdant flex items-center justify-center">
-                <span class="text-xs font-bold text-white">АҚ</span>
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-emerald-100 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#home" onclick="switchTab('home')" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand to-brand-light flex items-center justify-center text-white shadow-lg shadow-brand/20 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-leaf text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-black bg-gradient-to-r from-brand-dark to-brand-light bg-clip-text text-transparent">Дәмді сәт</span>
+                    <span class="block text-xs font-medium text-amber-600 dark:text-amber-400">Ысырапсыз өмір</span>
+                </div>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden xl:flex items-center gap-1 text-sm font-semibold">
+                <button onclick="switchTab('home')" class="nav-btn px-3 py-2 rounded-xl text-emerald-900 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="home">Басты бет</button>
+                <button onclick="switchTab('foods')" class="nav-btn px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="foods">Тағамдар</button>
+                <button onclick="switchTab('groceries')" class="nav-btn px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="groceries">Азық-түлік</button>
+                <button onclick="switchTab('map')" class="nav-btn px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="map">Карта</button>
+                <button onclick="switchTab('institutions')" class="nav-btn px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="institutions">Мекемелер</button>
+                <button onclick="switchTab('orders')" class="nav-btn px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="orders">Тапсырыстар</button>
+                <button onclick="switchTab('eco')" class="nav-btn px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="eco">Экология</button>
+                <button onclick="switchTab('partner')" class="nav-btn px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition" data-target="partner">Серіктес</button>
+            </nav>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle -->
+                <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-slate-800 flex items-center justify-center text-brand dark:text-amber-400 hover:scale-105 transition" title="Жарық / Қараңғы режим">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block"></i>
+                </button>
+
+                <!-- Profile -->
+                <button onclick="switchTab('profile')" class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-slate-800 flex items-center justify-center text-brand dark:text-emerald-400 hover:scale-105 transition" title="Жеке кабинет">
+                    <i class="fa-solid fa-user"></i>
+                </button>
+
+                <!-- Cart Button -->
+                <button onclick="switchTab('cart')" class="relative px-4 py-2.5 rounded-xl bg-brand text-white font-bold flex items-center gap-2 hover:bg-brand-light shadow-md shadow-brand/20 transition hover:scale-105">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="hidden sm:inline">Себет</span>
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-amber-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-black border-2 border-white dark:border-slate-900 shadow">0</span>
+                </button>
+
+                <!-- Mobile menu button -->
+                <button onclick="toggleMobileMenu()" class="xl:hidden w-10 h-10 rounded-xl bg-emerald-50 dark:bg-slate-800 flex items-center justify-center text-brand dark:text-emerald-400">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
             </div>
-            <span class="text-sm font-semibold tracking-wider uppercase text-bone-white">АБАЙ ҚҰНАНБАЙҰЛЫ — АШЫҚ САБАҚ</span>
         </div>
-        <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-ash-gray">
-            <a href="#hero" class="hover:text-bone-white transition-colors">Басты бет</a>
-            <a href="#sections" class="hover:text-bone-white transition-colors">Сабақ бөлімдері</a>
-            <a href="#interactive" class="hover:text-bone-white transition-colors">Интерактив</a>
-        </nav>
-        <button onclick="scrollToSections()" class="bg-electric-iris text-white px-5 py-2.5 rounded-[22.5px] text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-electric-iris/20 cursor-pointer">
-            Сабақты бастау
-        </button>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden xl:hidden bg-white dark:bg-slate-900 border-b border-emerald-100 dark:border-slate-800 px-4 py-4 space-y-2">
+            <button onclick="switchTab('home'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Басты бет</button>
+            <button onclick="switchTab('foods'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Тағамдар</button>
+            <button onclick="switchTab('groceries'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Азық-түлік</button>
+            <button onclick="switchTab('map'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Карта</button>
+            <button onclick="switchTab('institutions'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Мекемелер</button>
+            <button onclick="switchTab('orders'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Менің тапсырыстарым</button>
+            <button onclick="switchTab('eco'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Экологиялық үлес</button>
+            <button onclick="switchTab('partner'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Серіктес болу</button>
+            <button onclick="switchTab('profile'); toggleMobileMenu();" class="block w-full text-left px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 dark:hover:bg-slate-800">Жеке кабинет</button>
+        </div>
     </header>
 
-    <main class="flex-grow max-w-[1280px] mx-auto px-6 py-12 md:py-20 w-full" id="hero">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            <!-- Left Column: Oversized typography -->
-            <div class="lg:col-span-7 flex flex-col gap-6">
-                <div class="inline-flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-saffron-spark animate-pulse"></span>
-                    <span class="text-xs font-semibold uppercase tracking-widest text-saffron-spark">ӘДЕБИЕТ ПӘНІ • АШЫҚ САБАҚ</span>
-                </div>
-                
-                <h1 class="text-5xl md:text-7xl lg:text-[78px] font-normal leading-[1.1] display-title text-bone-white">
-                    Ақыл, қайрат, жүректі бірдей ұста.
-                </h1>
-                
-                <p class="text-lg font-extralight text-silver-mist max-w-[540px] leading-relaxed">
-                    Хкім Абайдың қара сөздері мен өлеңдері арқылы оқушылардың танымдық белсенділігін арттыруға арналған бірегей интерактивті ашық сабақ платформасы.
-                </p>
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-                <div class="flex flex-wrap items-center gap-4 pt-4">
-                    <button onclick="scrollToSections()" class="bg-electric-iris text-white px-6 py-3.5 rounded-[22.5px] text-sm font-semibold uppercase tracking-wider hover:scale-105 transition-all shadow-xl shadow-electric-iris/30 cursor-pointer">
-                        Барлық бөлімдерді ашу
-                    </button>
-                    <button onclick="openRandomQuote()" class="bg-transparent border border-white/20 text-bone-white px-6 py-3.5 rounded-[22.5px] text-sm font-semibold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">
-                        Нақыл сөз оқу
-                    </button>
-                </div>
-            </div>
-
-            <!-- Right Column: Pixar style Abai Portrait -->
-            <div class="lg:col-span-5 relative flex justify-center">
-                <div class="relative w-full max-w-[480px] aspect-[4/3] rounded-[24px] overflow-hidden border border-white/10 shadow-2xl group">
-                    <img src="Изображение ChatGPT 28 сент. 2026 г., 16_34_23.png" alt="Абай Құнанбайұлы Pixar стилінде" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://placehold.co/600x450/111111/8052ff?text=Abai+Pixar+Style'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
-                        <div>
-                            <span class="text-[10px] uppercase tracking-widest text-saffron-spark font-bold">Интерактивті портрет</span>
-                            <h3 class="text-lg font-normal text-white">Абай Құнанбайұлы (Pixar анимация стилінде)</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <section class="mt-28" id="sections">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-widest text-saffron-spark">САБАҚТЫҢ КЕЗЕҢДЕРІ</span>
-                    <h2 class="text-3xl md:text-5xl font-normal display-title text-bone-white mt-2">Интерактивті бөлімдер</h2>
-                </div>
-                <p class="text-sm text-ash-gray max-w-sm">Төмендегі батырмаларды басу арқылы сабақтың әрбір кезеңінің тапсырмалары мен материалдарын ашыңыз.</p>
-            </div>
-
-            <!-- Section Buttons Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <button onclick="selectSection(1)" id="btn-1" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">01</span>
-                    <span class="text-sm font-semibold text-white">Психологиялық ахуал</span>
-                </button>
-
-                <button onclick="selectSection(2)" id="btn-2" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">02</span>
-                    <span class="text-sm font-semibold text-white">Топқа бөлу</span>
-                </button>
-
-                <button onclick="selectSection(3)" id="btn-3" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">03</span>
-                    <span class="text-sm font-semibold text-white">Өткен тақырыпты қайталау</span>
-                </button>
-
-                <button onclick="selectSection(4)" id="btn-4" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">04</span>
-                    <span class="text-sm font-semibold text-white">Жаңа тақырып</span>
-                </button>
-
-                <button onclick="selectSection(5)" id="btn-5" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">05</span>
-                    <span class="text-sm font-semibold text-white">Топтық жұмыс</span>
-                </button>
-
-                <button onclick="selectSection(6)" id="btn-6" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">06</span>
-                    <span class="text-sm font-semibold text-white">Жұптық жұмыс</span>
-                </button>
-
-                <button onclick="selectSection(7)" id="btn-7" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">07</span>
-                    <span class="text-sm font-semibold text-white">Сергіту сәті</span>
-                </button>
-
-                <button onclick="selectSection(8)" id="btn-8" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">08</span>
-                    <span class="text-sm font-semibold text-white">Жеке жұмыс</span>
-                </button>
-
-                <button onclick="selectSection(9)" id="btn-9" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">09</span>
-                    <span class="text-sm font-semibold text-white">Кері байланыс</span>
-                </button>
-
-                <button onclick="selectSection(10)" id="btn-10" class="section-btn text-left p-5 rounded-[24px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-electric-iris transition-all cursor-pointer flex flex-col justify-between h-36">
-                    <span class="text-xs text-saffron-spark font-mono font-bold">10</span>
-                    <span class="text-sm font-semibold text-white">Бағалау</span>
-                </button>
-            </div>
-
-            <div id="content-display" class="mt-10 p-8 md:p-12 rounded-[24px] border border-electric-iris/40 bg-black/80 shadow-2xl relative overflow-hidden transition-all">
-                <div class="absolute -right-20 -top-20 w-60 h-60 bg-electric-iris/10 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div id="dynamic-content">
-                    <!-- Default loaded section 1 -->
-                    <div class="space-y-6">
-                        <div class="flex items-center gap-3">
-                            <span class="px-3 py-1 rounded-full bg-electric-iris/20 text-electric-iris text-xs font-semibold uppercase tracking-wider">Бөлім 01</span>
-                            <h3 class="text-2xl md:text-3xl font-normal text-white">Психологиялық ахуал: «Жүректен жүрекке»</h3>
-                        </div>
-                        <p class="text-silver-mist text-lg font-extralight leading-relaxed">
-                            Оқушылар шеңбер құрып тұрады. Абайдың «Адамның бір қызығы бала деген» өлеңінің шумақтарын бір-біріне айту арқылы жақсы тілектер тілейді және сабаққа жағымды көңіл-күй қалыптастырады.
-                        </p>
-                        <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10">
-                            <h4 class="text-xs uppercase tracking-wider text-saffron-spark font-semibold mb-2">Мұғалімге нұсқау:</h4>
-                            <p class="text-sm text-ash-gray">«Бүгінгі сабағымыз ұлы ақын Абай Құнанбайұлының шығармашылығына арналады. Әрқайсыңыздың жүректеріңізде үлкен сәуле бар, соны бүгінгі сабақта көрсетіңіздер».</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="mt-28 py-16 border-t border-white/10" id="interactive">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-widest text-saffron-spark">АБАЙДЫҢ ДАНАЛЫҒЫ</span>
-                    <h2 class="text-3xl md:text-4xl font-normal display-title text-bone-white mt-2">Қара сөздер интерактивті орталығы</h2>
-                    <p class="text-silver-mist text-lg font-extralight mt-4">
-                        Абайдың әрбір қара сөзі — өмірлік терең философия. Төмендегі батырманы басып, кездейсоқ қара сөз үзіндісін оқып, ой түйіңіз.
+        <!-- 1. HOME SECTION -->
+        <section id="tab-home" class="tab-content space-y-12">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-brand-dark via-brand to-brand-light text-white shadow-2xl p-8 sm:p-12 lg:p-16">
+                <div class="absolute inset-0 opacity-25 mix-blend-overlay bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80')"></div>
+                <div class="relative z-10 max-w-2xl space-y-6">
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/90 text-white font-bold text-xs tracking-wider uppercase shadow">
+                        <i class="fa-solid fa-fire"></i> Дәмді таңда. Тиімді ал. Ысырапты азайт.
+                    </span>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight">
+                        Сүйікті тағамыңызды 70%-ға дейінгі жеңілдікпен алыңыз
+                    </h1>
+                    <p class="text-lg text-emerald-100 font-normal leading-relaxed">
+                        «Дәмді сәт» сапалы тағамдар мен тұтынуға жарамды азық-түліктерді тиімді бағамен табуға көмектеседі.
                     </p>
-                    <div class="mt-6">
-                        <button onclick="openRandomQuote()" class="bg-electric-iris text-white px-6 py-3.5 rounded-[22.5px] text-sm font-semibold uppercase tracking-wider hover:opacity-90 transition-all cursor-pointer">
-                            Жаңа нақыл сөз алу
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="switchTab('foods')" class="px-6 py-3.5 rounded-2xl bg-amber-500 text-white font-bold hover:bg-amber-600 transition shadow-lg shadow-amber-500/30 flex items-center gap-2">
+                            <i class="fa-solid fa-utensils"></i> Тағамдарды көру
+                        </button>
+                        <button onclick="switchTab('groceries')" class="px-6 py-3.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold hover:bg-white/20 transition flex items-center gap-2">
+                            <i class="fa-solid fa-basket-shopping"></i> Азық-түлікті көру
+                        </button>
+                        <button onclick="switchTab('map')" class="px-6 py-3.5 rounded-2xl bg-emerald-900/60 backdrop-blur-md border border-emerald-400/30 text-white font-bold hover:bg-emerald-900 transition flex items-center gap-2">
+                            <i class="fa-solid fa-map-location-dot"></i> Картадан табу
                         </button>
                     </div>
                 </div>
-                <div class="p-8 rounded-[24px] border border-white/10 bg-white/[0.02] relative">
-                    <span class="text-4xl text-electric-iris font-serif absolute top-4 left-6">“</span>
-                    <p id="quote-text" class="text-lg font-extralight text-bone-white italic pt-4 pl-4 leading-relaxed">
-                        «Адам баласы адам баласынан ақыл, ғылым, ар, мінез деген нәрселермен озады.»
-                    </p>
-                    <p class="text-xs text-saffron-spark font-semibold uppercase tracking-wider mt-6 pl-4">— Абайдың он жетінші қара сөзінен</p>
+            </div>
+
+            <!-- Impact & Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-emerald-100 dark:border-slate-700 flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 text-brand dark:text-emerald-400 flex items-center justify-center text-2xl font-black">
+                        <i class="fa-solid fa-box-archive"></i>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-black text-slate-900 dark:text-white" id="stat-meals">4,820</div>
+                        <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Сақталған өнімдер саны</div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-emerald-100 dark:border-slate-700 flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl font-black">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-black text-slate-900 dark:text-white"><span id="stat-saved">12.5 млн</span> ₸</div>
+                        <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Пайдаланушылар үнемдегені</div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-emerald-100 dark:border-slate-700 flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center text-2xl font-black">
+                        <i class="fa-solid fa-earth-americas"></i>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-black text-slate-900 dark:text-white"><span id="stat-co2">9.4</span> т</div>
+                        <div class="text-sm font-medium text-slate-500 dark:text-slate-400">CO₂ шығарындысы азайды</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How it works -->
+            <div class="bg-white dark:bg-slate-800 p-8 sm:p-12 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-8">
+                <div class="text-center max-w-2xl mx-auto space-y-3">
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white">Платформа қалай жұмыс істейді?</h2>
+                    <p class="text-slate-600 dark:text-slate-400">Үш қарапайым қадам арқылы дәмді тағамды тиімді бағамен алып, табиғатты қорғаңыз.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-emerald-50/50 dark:bg-slate-700/50 p-6 rounded-2xl space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand text-white flex items-center justify-center font-black text-lg">1</div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Өнімді таңдаңыз</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Кафелер, наубайханалар мен дүкендердің сатылмай қалған балғын тағамдары мен азық-түліктерін 20-70% жеңілдікпен қараңыз.</p>
+                    </div>
+                    <div class="bg-emerald-50/50 dark:bg-slate-700/50 p-6 rounded-2xl space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand text-white flex items-center justify-center font-black text-lg">2</div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Тапсырыс беріңіз</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Өзіңізге ыңғайлы әдісті таңдаңыз: мекемеден өзіңіз барып алу (QR талонмен) немесе курьер арқылы үйге жеткізу.</p>
+                    </div>
+                    <div class="bg-emerald-50/50 dark:bg-slate-700/50 p-6 rounded-2xl space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand text-white flex items-center justify-center font-black text-lg">3</div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ысырапты азайтыңыз</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Сапалы әрі дәмді өнімді рахаттана тұтынып, қаламыздағы азық-түлік ысырабын азайтуға өз үлесіңізді қосыңыз.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Items Carousel/Grid -->
+            <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white">Бүгінгі ең тиімді ұсыныстар</h2>
+                    <button onclick="switchTab('foods')" class="text-brand dark:text-emerald-400 font-bold hover:underline flex items-center gap-1">Барлығын көру <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div id="home-featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Populated via JS -->
                 </div>
             </div>
         </section>
+
+        <!-- 2. FOODS CATALOG SECTION -->
+        <section id="tab-foods" class="tab-content hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 dark:text-white">Дайын тағамдар каталогы</h1>
+                    <p class="text-slate-600 dark:text-slate-400">Мейрамханалар мен кафелердің балғын дайын тағамдары</p>
+                </div>
+                <!-- Search & Filters -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <input type="text" id="food-search" oninput="filterFoods()" placeholder="Іздеу..." class="pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-100 dark:border-slate-700 text-sm focus:outline-none focus:border-brand w-48 sm:w-64">
+                    </div>
+                    <select id="food-category" onchange="filterFoods()" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-100 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:border-brand">
+                        <option value="all">Барлық санаттар</option>
+                        <option value="Дайын тағамдар">Дайын тағамдар</option>
+                        <option value="Ұлттық тағамдар">Ұлттық тағамдар</option>
+                        <option value="Пицца және фастфуд">Пицца және фастфуд</option>
+                        <option value="Нан-тоқаш">Нан-тоқаш</option>
+                        <option value="Десерт">Десерт</option>
+                        <option value="Салат">Салат</option>
+                        <option value="Сусын">Сусын</option>
+                        <option value="Отбасылық жиынтық">Отбасылық жиынтық</option>
+                        <option value="Тосын тағам қорабы">Тосын тағам қорабы</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Filter Chips -->
+            <div class="flex flex-wrap gap-2">
+                <button onclick="applyQuickFilter('all')" class="quick-chip active px-4 py-2 rounded-xl text-xs font-bold bg-brand text-white shadow">Барлығы</button>
+                <button onclick="applyQuickFilter('max_discount')" class="quick-chip px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-emerald-100 dark:border-slate-700 hover:bg-emerald-50">Ең үлкен жеңілдік</button>
+                <button onclick="applyQuickFilter('under_1000')" class="quick-chip px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-emerald-100 dark:border-slate-700 hover:bg-emerald-50">1000 ₸ дейін</button>
+                <button onclick="applyQuickFilter('last_portions')" class="quick-chip px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-emerald-100 dark:border-slate-700 hover:bg-emerald-50">Соңғы порциялар</button>
+                <button onclick="applyQuickFilter('halal')" class="quick-chip px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-emerald-100 dark:border-slate-700 hover:bg-emerald-50">Халал</button>
+                <button onclick="applyQuickFilter('delivery')" class="quick-chip px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-emerald-100 dark:border-slate-700 hover:bg-emerald-50">Жеткізу бар</button>
+            </div>
+
+            <!-- Foods Grid -->
+            <div id="foods-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+        <!-- 3. GROCERIES CATALOG SECTION -->
+        <section id="tab-groceries" class="tab-content hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 dark:text-white">Азық-түлік каталогы</h1>
+                    <p class="text-slate-600 dark:text-slate-400">Дүкендер мен супермаркеттердің сапалы өнімдері тиімді бағамен</p>
+                </div>
+                <!-- Search & Filters -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <input type="text" id="grocery-search" oninput="filterGroceries()" placeholder="Тауарды іздеу..." class="pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-100 dark:border-slate-700 text-sm focus:outline-none focus:border-brand w-48 sm:w-64">
+                    </div>
+                    <select id="grocery-category" onchange="filterGroceries()" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-100 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:border-brand">
+                        <option value="all">Барлық санаттар</option>
+                        <option value="Сүт өнімдері">Сүт өнімдері</option>
+                        <option value="Ет өнімдері">Ет өнімдері</option>
+                        <option value="Жартылай дайын өнімдер">Жартылай дайын өнімдер</option>
+                        <option value="Көкөністер">Көкөністер</option>
+                        <option value="Жемістер">Жемістер</option>
+                        <option value="Нан-тоқаш">Нан-тоқаш</option>
+                        <option value="Тәттілер">Тәттілер</option>
+                        <option value="Сусындар">Сусындар</option>
+                        <option value="Бакалея">Бакалея</option>
+                        <option value="Балалар тағамы">Балалар тағамы</option>
+                        <option value="Азық-түлік жиынтығы">Азық-түлік жиынтығы</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Expiry Color Legend -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-emerald-100 dark:border-slate-700 flex flex-wrap items-center gap-6 text-sm">
+                <span class="font-bold text-slate-900 dark:text-white"><i class="fa-solid fa-circle-info text-brand"></i> Жарамдылық мерзімінің индикаторы:</span>
+                <div class="flex items-center gap-2">
+                    <span class="w-3.5 h-3.5 rounded-full bg-emerald-500"></span>
+                    <span>3 күннен артық қалды</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3.5 h-3.5 rounded-full bg-amber-500"></span>
+                    <span>1–3 күн қалды</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3.5 h-3.5 rounded-full bg-rose-500"></span>
+                    <span>24 сағаттан аз қалды</span>
+                </div>
+            </div>
+
+            <!-- Groceries Grid -->
+            <div id="groceries-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+        <!-- 4. MAP SECTION -->
+        <section id="tab-map" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 dark:text-white">Орал қаласының интерактивті картасы</h1>
+                    <p class="text-slate-600 dark:text-slate-400">Жақыныңыздағы мекемелер мен жеңілдіктерді картадан оңай табыңыз</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="locateUser()" class="px-4 py-2.5 rounded-xl bg-brand text-white font-bold text-sm flex items-center gap-2 hover:bg-brand-light transition shadow">
+                        <i class="fa-solid fa-location-crosshairs"></i> Менің орным
+                    </button>
+                    <select id="map-filter-type" onchange="updateMapMarkers()" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-100 dark:border-slate-700 text-sm font-semibold focus:outline-none">
+                        <option value="all">Барлық мекемелер</option>
+                        <option value="Кафе">Кафелер</option>
+                        <option value="Мейрамхана">Мейрамханалар</option>
+                        <option value="Наубайхана">Наубайханалар</option>
+                        <option value="Асхана">Асханалар</option>
+                        <option value="Кондитерлік дүкен">Кондитерлік</option>
+                        <option value="Азық-түлік дүкені">Азық-түлік дүкені</option>
+                        <option value="Супермаркет">Супермаркет</option>
+                        <option value="Минимаркет">Минимаркет</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="bg-white dark:bg-slate-800 p-3 rounded-3xl border border-emerald-100 dark:border-slate-700 shadow-sm h-[600px] relative">
+                <div id="leaflet-map" class="w-full h-full rounded-2xl"></div>
+            </div>
+        </section>
+
+        <!-- 5. INSTITUTIONS SECTION -->
+        <section id="tab-institutions" class="tab-content hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 dark:text-white">Серіктес мекемелер</h1>
+                    <p class="text-slate-600 dark:text-slate-400">Орал қаласы бойынша бізбен бірге жұмыс істейтін 18 шартты мекеме (үлгілік деректер)</p>
+                </div>
+                <select id="inst-filter" onchange="renderInstitutions()" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-100 dark:border-slate-700 text-sm font-semibold focus:outline-none">
+                    <option value="all">Барлық санаттар</option>
+                    <option value="Кафе">Кафе</option>
+                    <option value="Мейрамхана">Мейрамхана</option>
+                    <option value="Наубайхана">Наубайхана</option>
+                    <option value="Асхана">Асхана</option>
+                    <option value="Кондитерлік дүкен">Кондитерлік дүкен</option>
+                    <option value="Азық-түлік дүкені">Азық-түлік дүкені</option>
+                    <option value="Супермаркет">Супермаркет</option>
+                    <option value="Минимаркет">Минимаркет</option>
+                </select>
+            </div>
+
+            <div id="institutions-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+        <!-- 6. MY ORDERS SECTION -->
+        <section id="tab-orders" class="tab-content hidden space-y-8">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 dark:text-white">Менің тапсырыстарым</h1>
+                <p class="text-slate-600 dark:text-slate-400">Барлық белсенді және аяқталған тапсырыстарыңыздың тарихы</p>
+            </div>
+
+            <div id="orders-list" class="space-y-4">
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+        <!-- 7. ECOLOGICAL IMPACT SECTION -->
+        <section id="tab-eco" class="tab-content hidden space-y-8">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 dark:text-white">Экологиялық үлес</h1>
+                <p class="text-slate-600 dark:text-slate-400">Біздің ортақ күш-жігеріміз арқылы табиғатқа тигізген пайдамыз (есептік бағалау)</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-4 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 text-brand dark:text-emerald-400 flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <div class="text-4xl font-black text-slate-900 dark:text-white" id="eco-saved-meals">0</div>
+                    <div class="text-sm font-medium text-slate-500">Сақталған тағам мен өнім саны</div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+                        <div class="bg-brand h-full rounded-full transition-all duration-500" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-4 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    <div class="text-4xl font-black text-slate-900 dark:text-white"><span id="eco-co2">0.0</span> т</div>
+                    <div class="text-sm font-medium text-slate-500">Азайтылған CO₂ шығарындысы</div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+                        <div class="bg-teal-600 h-full rounded-full transition-all duration-500" style="width: 65%"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-4 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-droplet"></i>
+                    </div>
+                    <div class="text-4xl font-black text-slate-900 dark:text-white"><span id="eco-water">0</span> л</div>
+                    <div class="text-sm font-medium text-slate-500">Үнемделген су ресурсы</div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+                        <div class="bg-blue-500 h-full rounded-full transition-all duration-500" style="width: 80%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Eco Info Card -->
+            <div class="bg-emerald-900 text-white p-8 sm:p-10 rounded-3xl space-y-4 shadow-xl">
+                <h3 class="text-2xl font-black">Неге азық-түлік ысырабын азайту маңызды?</h3>
+                <p class="text-emerald-100 leading-relaxed">
+                    Әлемде өндірілетін барлық азық-түліктің үштен бірі ысырап болады. Бұл парниктік газдардың бөлінуіне және су мен жер ресурстарының босқа жұмсалуына әкеледі. «Дәмді сәт» платформасы арқылы сіз күн сайын сапалы азық-түлікті сақтап қана қоймай, қоршаған ортаны қорғауға үлес қосасыз.
+                </p>
+            </div>
+        </section>
+
+        <!-- 8. PARTNER SECTION -->
+        <section id="tab-partner" class="tab-content hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 dark:text-white">Серіктес болу және өнімдерді басқару</h1>
+                    <p class="text-slate-600 dark:text-slate-400">Мекемеңіздің артылған өнімдерін орналастырып, қосымша табыс табыңыз</p>
+                </div>
+                <button onclick="openAddProductModal()" class="px-6 py-3 rounded-2xl bg-brand text-white font-bold hover:bg-brand-light transition shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Жаңа өнім қосу
+                </button>
+            </div>
+
+            <!-- Partner Dashboard Products List -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-emerald-100 dark:border-slate-700 p-6 shadow-sm space-y-6">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Сіздің белсенді ұсыныстарыңыз</h2>
+                <div id="partner-products-list" class="space-y-4">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. PROFILE SECTION -->
+        <section id="tab-profile" class="tab-content hidden space-y-8">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 dark:text-white">Жеке кабинет</h1>
+                <p class="text-slate-600 dark:text-slate-400">Пайдаланушы деректері, мекенжайлар және таңдаулылар</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- User Info Card -->
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand to-brand-light text-white text-3xl font-black flex items-center justify-center shadow-lg">
+                            ДС
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white" id="profile-name">Айбек Серікұлы</h2>
+                            <p class="text-sm text-slate-500">ibek.serik@gmail.com</p>
+                            <span class="inline-block mt-1 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-brand dark:text-emerald-400 text-xs font-bold">Эко-белсенді</span>
+                        </div>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Телефон:</span>
+                            <span class="font-bold text-slate-900 dark:text-white">+7 (701) 234-56-78</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Жеткізу мекенжайы:</span>
+                            <span class="font-bold text-slate-900 dark:text-white">Достық даңғылы, 150</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Жалпы үнемделген:</span>
+                            <span class="font-bold text-emerald-600" id="profile-saved-money">18,450 ₸</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favorites List -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-6">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Таңдаулы өнімдер</h2>
+                    <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. CART SECTION -->
+        <section id="tab-cart" class="tab-content hidden space-y-8">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 dark:text-white">Себет және тапсырыс</h1>
+                <p class="text-slate-600 dark:text-slate-400">Таңдалған өнімдерді тексеріп, тапсырысты рәсімдеңіз</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Cart Items List -->
+                <div class="lg:col-span-2 space-y-4" id="cart-items-container">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Checkout Summary Card -->
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-6 h-fit shadow-sm">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Тапсырыс мәліметі</h2>
+                    
+                    <!-- Delivery Method Switcher -->
+                    <div class="grid grid-cols-2 gap-2 p-1.5 bg-emerald-50 dark:bg-slate-700 rounded-2xl">
+                        <button onclick="setDeliveryMethod('pickup')" id="method-pickup" class="py-2.5 rounded-xl font-bold text-sm bg-brand text-white transition shadow-sm">Өзім барып аламын</button>
+                        <button onclick="setDeliveryMethod('delivery')" id="method-delivery" class="py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-300 transition">Жеткізу</button>
+                    </div>
+
+                    <!-- Delivery Details Form -->
+                    <div id="delivery-form" class="hidden space-y-3 pt-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Алушының аты</label>
+                            <input type="text" id="del-name" value="Айбек Серікұлы" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Телефон нөмірі</label>
+                            <input type="text" id="del-phone" value="+7 701 234 56 78" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Мекенжайы</label>
+                            <input type="text" id="del-address" value="Достық даңғылы, 150, п. 12" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Курьерге ескертпе</label>
+                            <input type="text" id="del-note" placeholder="Мысалы: Қоңырау шалмаңыз" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Бастапқы құны:</span>
+                            <span class="font-bold text-slate-900 dark:text-white" id="cart-subtotal">0 ₸</span>
+                        </div>
+                        <div class="flex justify-between text-emerald-600">
+                            <span>Жеңілдік сомасы:</span>
+                            <span class="font-bold" id="cart-discount">0 ₸</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Жеткізу ақысы:</span>
+                            <span class="font-bold text-slate-900 dark:text-white" id="cart-delivery-fee">0 ₸</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-black pt-2 border-t border-slate-100 dark:border-slate-700">
+                            <span class="text-slate-900 dark:text-white">Төленетін сома:</span>
+                            <span class="text-brand dark:text-emerald-400" id="cart-total">0 ₸</span>
+                        </div>
+                        <div class="flex justify-between text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/30 p-2.5 rounded-xl">
+                            <span>Жалпы үнемдегеніңіз:</span>
+                            <span id="cart-saved-total">0 ₸</span>
+                        </div>
+                    </div>
+
+                    <button onclick="openCheckoutModal()" class="w-full py-3.5 rounded-2xl bg-brand text-white font-bold hover:bg-brand-light transition shadow-lg shadow-brand/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-credit-card"></i> Төлемге өту
+                    </button>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="border-t border-white/10 py-8 px-6 max-w-[1280px] mx-auto w-full flex flex-col sm:flex-row items-center justify-between text-xs text-ash-gray gap-4">
-        <p>© 2026 Абай Құнанбайұлы ашық сабақ веб-қосымшасы. Барлық құқықтар қорғалған.</p>
-        <div class="flex items-center gap-6">
-            <span class="text-bone-white">Dala Style Design Reference</span>
-            <span class="w-1.5 h-1.5 rounded-full bg-electric-iris"></span>
-            <span class="text-saffron-spark">Pixar Art Edition</span>
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-emerald-100 dark:border-slate-800 mt-16 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <span class="text-xl font-black bg-gradient-to-r from-brand-dark to-brand-light bg-clip-text text-transparent">Дәмді сәт</span>
+                </div>
+                <p class="text-sm font-semibold text-amber-600 dark:text-amber-400">«Дәмді таңда. Тиімді ал. Ысырапты азайт.»</p>
+                <div class="flex items-center gap-4 text-slate-500">
+                    <a href="#" class="hover:text-brand transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="hover:text-brand transition"><i class="fa-brands fa-telegram text-xl"></i></a>
+                    <a href="#" class="hover:text-brand transition"><i class="fa-brands fa-whatsapp text-xl"></i></a>
+                </div>
+            </div>
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-500 space-y-2">
+                <p>Сайтта жарамдылық мерзімі аяқталмаған өнімдер ғана ұсынылады. Сақтау талаптары мен өнім сапасына оны ұсынған мекеме жауап береді.</p>
+                <p>Картадағы мекемелер мен төлем және жеткізу әрекеттері үлгілік сипатта. Нақты ақша алынбайды.</p>
+                <p class="pt-2">&copy; 2026 «Дәмді сәт». Барлық құқықтар қорғалған. Орал қаласы.</p>
+            </div>
         </div>
     </footer>
 
+    <!-- MODALS -->
+
+    <!-- Product Details Modal -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative">
+            <button onclick="closeProductModal()" class="absolute top-6 right-6 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modal-product-content" class="space-y-6">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout / Payment Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl relative">
+            <button onclick="closeCheckoutModal()" class="absolute top-6 right-6 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white">Төлем жасау (Үлгілік режим)</h3>
+                <p class="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/30 p-3 rounded-xl font-bold">
+                    Бұл төлем үлгілік режимде орындалады. Нақты ақша алынбайды. Карта деректері ешқашан сақталмайды.
+                </p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Карта иесінің аты</label>
+                    <input type="text" id="pay-holder" value="AIBEK SERIKOV" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Карта нөмірі</label>
+                    <input type="text" id="pay-card" placeholder="4400 0000 0000 0000" maxlength="19" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Жарамдылық мерзімі</label>
+                        <input type="text" id="pay-expiry" placeholder="MM/YY" maxlength="5" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">CVV коды</label>
+                        <input type="password" id="pay-cvv" placeholder="123" maxlength="3" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                    </div>
+                </div>
+                <div class="pt-2 flex justify-between items-center text-sm font-bold">
+                    <span>Төленетін сома:</span>
+                    <span id="modal-pay-total" class="text-xl text-brand dark:text-emerald-400">0 ₸</span>
+                </div>
+                <button onclick="processPayment()" class="w-full py-3.5 rounded-2xl bg-brand text-white font-bold hover:bg-brand-light transition shadow-lg shadow-brand/20">
+                    Төлемді растау
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Receipt Modal -->
+    <div id="receipt-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative">
+            <button onclick="closeReceiptModal()" class="absolute top-6 right-6 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-brand dark:text-emerald-400 text-3xl flex items-center justify-center mx-auto">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white">Тапсырыс сәтті қабылданды!</h3>
+                <p class="text-sm text-slate-500">Электронды чек пен алу талоны жасалды</p>
+            </div>
+            <div id="receipt-content" class="bg-emerald-50/50 dark:bg-slate-900 p-6 rounded-2xl space-y-4 text-sm font-mono">
+                <!-- Populated via JS -->
+            </div>
+            <div class="flex gap-3">
+                <button onclick="printReceipt()" class="flex-1 py-3 rounded-xl bg-slate-200 dark:bg-slate-700 font-bold hover:bg-slate-300 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i> Басып шығару
+                </button>
+                <button onclick="closeReceiptModal(); switchTab('orders');" class="flex-1 py-3 rounded-xl bg-brand text-white font-bold hover:bg-brand-light transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-box"></i> Тапсырыстарға өту
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Partner Product Modal -->
+    <div id="product-form-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative">
+            <button onclick="closeAddProductModal()" class="absolute top-6 right-6 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-2xl font-black text-slate-900 dark:text-white" id="product-form-title">Жаңа өнім қосу</h3>
+            <div class="space-y-4">
+                <input type="hidden" id="edit-product-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Өнім түрі</label>
+                    <select id="form-type" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                        <option value="food">Дайын тағам</option>
+                        <option value="grocery">Азық-түлік</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Өнім атауы</label>
+                    <input type="text" id="form-name" placeholder="Мысалы: Бауырсақ жиынтығы" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Фотосурет сілтемесі (Unsplash)</label>
+                    <input type="text" id="form-image" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Санаты</label>
+                    <input type="text" id="form-category" placeholder="Мысалы: Ұлттық тағамдар" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Бастапқы баға (₸)</label>
+                        <input type="number" id="form-price" placeholder="2000" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Жеңілдік (%)</label>
+                        <input type="number" id="form-discount" placeholder="50" min="20" max="70" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Қалған саны / порция</label>
+                        <input type="number" id="form-stock" placeholder="5" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Жарамдылық күні / сағат</label>
+                        <input type="date" id="form-expiry" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Құрамы / сипаттамасы</label>
+                    <input type="text" id="form-desc" placeholder="Сипаттамасы..." class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700 text-sm font-semibold">
+                </div>
+                <button onclick="savePartnerProduct()" class="w-full py-3.5 rounded-2xl bg-brand text-white font-bold hover:bg-brand-light transition shadow-lg shadow-brand/20">
+                    Өнімді сақтау және жариялау
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- Application JavaScript -->
     <script>
-        const sectionsData = {
-            1: {
-                title: "Психологиялық ахуал: «Жүректен жүрекке»",
-                desc: "Оқушылар шеңбер құрып тұрады. Абайдың «Адамның бір қызығы бала деген» өлеңінің шумақтарын бір-біріне айту арқылы жақсы тілектер тілейді және сабаққа жағымды көңіл-күй қалыптастырады.",
-                instruction: "«Бүгінгі сабағымыз ұлы ақын Абай Құнанбайұлының шығармашылығына арналады. Әрқайсыңыздың жүректеріңізде үлкен сәуле бар, соны бүгінгі сабақта көрсетіңіздер»."
-            },
-            2: {
-                title: "Топқа бөлу: «Абайдың қара сөздері»",
-                desc: "Оқушылар интерактивті түрде 3 топқа бөлінеді: 1-топ «Ғылым», 2-топ «Ақыл», 3-топ «Жүрек». Әр топ ақынның қағидаттары бойынша топтасады.",
-                instruction: "Әр топ өз атауына сәйкес Абайдың өлеңдерінен немесе қара сөздерінен дәйексөз таңдап, қорғайды."
-            },
-            3: {
-                title: "Өткен тақырыпты қайталау: «Блиц-сұрақтар»",
-                desc: "Абай Құнанбайұлының өмірбаяны мен алдыңғы сабақтарда өткен шығармалары бойынша интерактивті сұрақ-жауап кезеңі.",
-                instruction: "1. Абай қай жылы дүниеге келді?\n2. Әкесі мен анасының есімі кім?\n3. Абайдың негізін салған ән-күйлері қандай?"
-            },
-            4: {
-                title: "Жаңа тақырып: «Абай – дана, Абай – дара»",
-                desc: "Абайдың ағартушылық көзқарастары, поэзиясы мен философиялық ойларының маңызы туралы жаңа мультимедиялық түсіндірме.",
-                instruction: "Тақырып бойынша интерактивті бейнематериал көрсетіліп, негізгі терминдер дәптерге жазылады."
-            },
-            5: {
-                title: "Топтық жұмыс: «ПОСТ» әдісі",
-                desc: "Әр топ Абайдың қара сөздеріне талдау жасап, постер немесе сызба жасайды.\n• 1-топ: Білім және ғылым туралы;\n• 2-топ: Адамгершілік пен ар-ұят туралы;\n• 3-топ: Еңбек және кәсіп туралы.",
-                instruction: "Топ мүшелері өз ойларын ортаға салып, ортақ постер қорғайды (уақыты: 5 минут)."
-            },
-            6: {
-                title: "Жұптық жұмыс: «Ойлан, жұптас, пікірлас»",
-                desc: "Жұптар Абайдың «Жаз» немесе «Қыс» өлеңдерінен үзінді оқып, көркемдік ерекшеліктерін (метафора, теңеу, эпитет) табады.",
-                instruction: "Өлең жолдарындағы көркемдік құралдарды тауып, бір-біріне түсіндіреді."
-            },
-            7: {
-                title: "Сергіту сәті: «Көзімнің қарасы» әуенімен",
-                desc: "Оқушылар орнынан тұрып, Абайдың әйгілі «Көзімнің қарасы» әнінің әуеніне жеңіл гимнастикалық және сергіту жаттығуларын жасайды.",
-                instruction: "Денені босаңсытып, көз бен мойын бұлшықеттеріне арналған жаттығулар орындалады."
-            },
-            8: {
-                title: "Жеке жұмыс: «Абайға хат» немесе Эссе",
-                desc: "Әр оқушы өзіне әсер еткен Абайдың бір өлеңі немесе қара сөзі туралы 5-7 сөйлемнен тұратын шағын эссе немесе ой-толғау жазады.",
-                instruction: "Өз ойын еркін, шынайы жеткізу бағаланады."
-            },
-            9: {
-                title: "Кері байланыс: «Абайдың бес асыл ісі» ағашы",
-                desc: "Сабақ соңында оқушылар өз стикерлерін ағашқа жабыстыру арқылы бүгінгі сабақтан алған әсерлерін көрсетеді.",
-                instruction: "«Бүгін мен не үйрендім? Маған не ерекше ұнады?» сұрақтарына жауап береді."
-            },
-            10: {
-                title: "Бағалау: «Жұлдызды сәт»",
-                desc: "Белсенді қатысқан оқушылар мен топтар өзара және мұғалім тарапынан мадақтау сөздерімен, бағалау парақшалары арқылы бағаланады.",
-                instruction: "Үй тапсырмасы: Абайдың кез келген өлеңін жатқа оқуға дайындалып келу."
+        
+        // 18 Institutions in Uralsk
+        const institutionsData = [
+            { id: 1, name: "«Жібек жолы» мейрамханасы", category: "Мейрамхана", address: "Достық даңғылы, 182", hours: "10:00 - 23:00", phone: "+7 7112 50-10-20", rating: 4.8, lat: 51.2330, lng: 51.3650, offers: 4, maxDiscount: 50, delivery: true },
+            { id: 2, name: "«Акжайық» кафесі", category: "Кафе", address: "Құрманғазы көшесі, 145", hours: "09:00 - 22:00", phone: "+7 7112 51-22-33", rating: 4.6, lat: 51.2370, lng: 51.3720, offers: 3, maxDiscount: 60, delivery: true },
+            { id: 3, name: "«Лето» наубайханасы", category: "Наубайхана", address: "С. Датов көшесі, 24", hours: "07:00 - 20:00", phone: "+7 7112 53-44-55", rating: 4.9, lat: 51.2280, lng: 51.3500, offers: 5, maxDiscount: 70, delivery: false },
+            { id: 4, name: "«Ақжайық» асханасы", category: "Асхана", address: "М. Маметова көшесі, 78", hours: "08:00 - 18:00", phone: "+7 7112 52-11-90", rating: 4.5, lat: 51.2400, lng: 51.3600, offers: 2, maxDiscount: 40, delivery: true },
+            { id: 5, name: "«Caravan» мейрамханасы", category: "Мейрамхана", address: "Назарбаев даңғылы, 210", hours: "11:00 - 00:00", phone: "+7 7112 55-66-77", rating: 4.7, lat: 51.2310, lng: 51.3800, offers: 3, maxDiscount: 50, delivery: true },
+            { id: 6, name: "«Sweet House» кондитерлік дүкені", category: "Кондитерлік дүкен", address: "Ә. Молдағұлова көшесі, 55", hours: "09:00 - 21:00", phone: "+7 7112 54-88-99", rating: 4.9, lat: 51.2350, lng: 51.3550, offers: 4, maxDiscount: 60, delivery: true },
+            { id: 7, name: "«Ивушка» кафесі", category: "Кафе", address: "Чапаев көшесі, 30", hours: "10:00 - 23:00", phone: "+7 7112 50-99-88", rating: 4.4, lat: 51.2250, lng: 51.3620, offers: 2, maxDiscount: 50, delivery: false },
+            { id: 8, name: "«Анвар» супермаркеті", category: "Супермаркет", address: "Евразия даңғылы, 65", hours: "08:00 - 23:00", phone: "+7 7112 59-00-11", rating: 4.6, lat: 51.2450, lng: 51.3900, offers: 8, maxDiscount: 70, delivery: true },
+            { id: 9, name: "«Дина» супермаркеті", category: "Супермаркет", address: "С. Датов көшесі, 16/1", hours: "08:00 - 23:00", phone: "+7 7112 58-22-44", rating: 4.5, lat: 51.2200, lng: 51.3400, offers: 7, maxDiscount: 60, delivery: true },
+            { id: 10, name: "«Алтын алма» азық-түлік дүкені", category: "Азық-түлік дүкені", address: "Гагарин көшесі, 12", hours: "08:00 - 22:00", phone: "+7 7112 51-33-22", rating: 4.3, lat: 51.2500, lng: 51.3550, offers: 3, maxDiscount: 50, delivery: false },
+            { id: 11, name: "«Студент» асханасы", category: "Асхана", address: "Жәңгір хан көшесі, 51", hours: "08:00 - 17:00", phone: "+7 7112 31-44-55", rating: 4.7, lat: 51.2100, lng: 51.3700, offers: 3, maxDiscount: 50, delivery: true },
+            { id: 12, name: "«Rendezvous» мейрамханасы", category: "Мейрамхана", address: "Т. Масихин көшесі, 9", hours: "12:00 - 01:00", phone: "+7 7112 50-77-66", rating: 4.8, lat: 51.2380, lng: 51.3680, offers: 2, maxDiscount: 40, delivery: true },
+            { id: 13, name: "«Зеленый» минимаркеті", category: "Минимаркет", address: "Құрманғазы көшесі, 80", hours: "08:00 - 22:00", phone: "+7 7112 52-33-11", rating: 4.4, lat: 51.2340, lng: 51.3610, offers: 4, maxDiscount: 50, delivery: true },
+            { id: 14, name: "«Колос» наубайханасы", category: "Наубайхана", address: "Назарбаев даңғылы, 130", hours: "07:30 - 20:00", phone: "+7 7112 53-99-00", rating: 4.9, lat: 51.2300, lng: 51.3750, offers: 5, maxDiscount: 60, delivery: false },
+            { id: 15, name: "«Өнер» кафесі", category: "Кафе", address: "Абай даңғылы, 75", hours: "10:00 - 23:00", phone: "+7 7112 54-11-22", rating: 4.5, lat: 51.2420, lng: 51.3650, offers: 3, maxDiscount: 50, delivery: true },
+            { id: 16, name: "«Нұр» азық-түлік дүкені", category: "Азық-түлік дүкені", address: "С. Түгелбаев көшесі, 4", hours: "08:00 - 21:00", phone: "+7 7112 55-44-33", rating: 4.2, lat: 51.2260, lng: 51.3450, offers: 3, maxDiscount: 50, delivery: false },
+            { id: 17, name: "«Достық» минимаркеті", category: "Минимаркет", address: "Достық даңғылы, 90", hours: "08:00 - 22:00", phone: "+7 7112 56-77-88", rating: 4.6, lat: 51.2320, lng: 51.3630, offers: 4, maxDiscount: 50, delivery: true },
+            { id: 18, name: "«Барыс» азық-түлік дүкені", category: "Азық-түлік дүкені", address: "Евразия даңғылы, 110", hours: "08:00 - 22:00", phone: "+7 7112 57-88-99", rating: 4.5, lat: 51.2440, lng: 51.3850, offers: 3, maxDiscount: 50, delivery: true }
+        ];
+
+        let foodsData = [
+            { id: 101, name: "Қазақша ет жиынтығы", category: "Ұлттық тағамдар", desc: "Жылқы еті, қазы, жал, сүрленген ет және қамыр", price: 3500, discount: 50, stock: 3, time: "18:00 - 19:30", expiryTime: "Бүгін 22:00-ге дейін", allergen: "Ет өнімдері, ұн", halal: true, delivery: true, instId: 1, instName: "«Жібек жолы» мейрамханасы", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" },
+            { id: 102, name: "Пицца Маргарита", category: "Пицца және фастфуд", desc: "Моцарелла ірімшігі, қызанақ соусы, балғын райхан", price: 2800, discount: 60, stock: 5, time: "20:00 - 21:30", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Лактоза, глютен", halal: true, delivery: true, instId: 2, instName: "«Акжайық» кафесі", image: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=800&q=80" },
+            { id: 103, name: "Бауырсақ жиынтығы", category: "Нан-тоқаш", desc: "Ыстық, жұмсақ үй бауырсақтары (10 дана)", price: 1200, discount: 50, stock: 8, time: "17:00 - 19:00", expiryTime: "Бүгін 21:00-ге дейін", allergen: "Ұн, сүт", halal: true, delivery: false, instId: 3, instName: "«Лето» наубайханасы", image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80" },
+            { id: 104, name: "Цезарь салаты тауық етімен", category: "Салат", desc: "Балғын айсберг, пармезан, сухари, тауық төс еті", price: 2200, discount: 40, stock: 4, time: "18:30 - 20:00", expiryTime: "Бүгін 22:00-ге дейін", allergen: "Жұмыртқа, лактоза", halal: true, delivery: true, instId: 4, instName: "«Ақжайық» асханасы", image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&w=800&q=80" },
+            { id: 105, name: "Наполеон тортының кесегі", category: "Десерт", desc: "Жұқа қабаттар және нәзік крем", price: 1400, discount: 50, stock: 6, time: "19:00 - 21:00", expiryTime: "Бүгін 22:30-ге дейін", allergen: "Лактоза, жұмыртқа", halal: true, delivery: true, instId: 6, instName: "«Sweet House» кондитерлік дүкені", image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80" },
+            { id: 106, name: "Манты (6 дана)", category: "Дайын тағамдар", desc: "Тартылған сиыр еті мен пияз қосылған ұлттық манты", price: 2000, discount: 40, stock: 3, time: "17:30 - 19:00", expiryTime: "Бүгін 21:00-ге дейін", allergen: "Ет, ұн", halal: true, delivery: true, instId: 4, instName: "«Ақжайық» асханасы", image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80" },
+            { id: 107, name: "Тосын тағам қорабы №1", category: "Тосын тағам қорабы", desc: "Мейрамхананың сол күнгі артылған ең дәмді тағамдары жиынтығы", price: 3000, discount: 70, stock: 2, time: "21:30 - 22:30", expiryTime: "Бүгін 23:30-ге дейін", allergen: "Әртүрлі", halal: true, delivery: false, instId: 1, instName: "«Жібек жолы» мейрамханасы", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" },
+            { id: 108, name: "Клубничная панна-котта", category: "Десерт", desc: "Құлпынай соусы қосылған итальяндық десерт", price: 1500, discount: 50, stock: 5, time: "18:00 - 20:00", expiryTime: "Бүгін 22:00-ге дейін", allergen: "Лактоза", halal: true, delivery: true, instId: 6, instName: "«Sweet House» кондитерлік дүкені", image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80" },
+            { id: 109, name: "Қытырлақ тауықбургер", category: "Пицца және фастфуд", desc: "Тауық еті, қытырлақ салат жапырағы, фирмалық соус", price: 1800, discount: 50, stock: 4, time: "20:00 - 22:00", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Глютен, лактоза", halal: true, delivery: true, instId: 2, instName: "«Акжайық» кафесі", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80" },
+            { id: 110, name: "Француз круассаны", category: "Нан-тоқаш", desc: "Майлы қабатталған қамырдан жасалған круассан", price: 900, discount: 40, stock: 7, time: "17:00 - 19:00", expiryTime: "Бүгін 21:00-ге дейін", allergen: "Глютен, сүт", halal: true, delivery: false, instId: 3, instName: "«Лето» наубайханасы", image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80" },
+            { id: 111, name: "Отбасылық пицца жиынтығы", category: "Отбасылық жиынтық", desc: "Екі үлкен пицца және 1.5л сусын", price: 5500, discount: 50, stock: 2, time: "19:00 - 21:00", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Глютен, лактоза", halal: true, delivery: true, instId: 5, instName: "«Caravan» мейрамханасы", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80" },
+            { id: 112, name: "Борщ сиыр етімен", category: "Дайын тағамдар", desc: "Дәстүрлі қызыл борщ, қаймақ және жасыл пиязбен", price: 1600, discount: 40, stock: 5, time: "15:00 - 18:00", expiryTime: "Бүгін 20:00-ге дейін", allergen: "Ет, лактоза", halal: true, delivery: true, instId: 11, instName: "«Студент» асханасы", image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80" },
+            { id: 113, name: "Шырынды лагман", category: "Ұлттық тағамдар", desc: "Қолдан созылған кеспе, сиыр еті, көкөністер", price: 2400, discount: 50, stock: 3, time: "18:00 - 20:00", expiryTime: "Бүгін 22:00-ге дейін", allergen: "Ет, ұн", halal: true, delivery: true, instId: 5, instName: "«Caravan» мейрамханасы", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80" },
+            { id: 114, name: "Греk салаты", category: "Салат", desc: "Фета ірімшігі, зәйтүн, балғын қияр мен қызанақ", price: 1800, discount: 40, stock: 4, time: "17:00 - 19:00", expiryTime: "Бүгін 21:00-ге дейін", allergen: "Лактоза", halal: true, delivery: true, instId: 7, instName: "«Ивушка» кафесі", image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80" },
+            { id: 115, name: "Лимонад мохито (0.5л)", category: "Сусын", desc: "Жалбыз, лайм және мұз қосылған балғын сусын", price: 1000, discount: 50, stock: 10, time: "12:00 - 22:00", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Жоқ", halal: true, delivery: true, instId: 2, instName: "«Акжайық» кафесі", image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80" },
+            { id: 116, name: "Чизкейк Нью-Йорк", category: "Десерт", desc: "Нәзік ірімшік негізіндегі классикалық чизкейк", price: 1700, discount: 50, stock: 4, time: "18:00 - 21:00", expiryTime: "Бүгін 22:30-ге дейін", allergen: "Лактоза, глютен", halal: true, delivery: true, instId: 6, instName: "«Sweet House» кондитерлік дүкені", image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80" },
+            { id: 117, name: "Тосын тағам қорабы №2", category: "Тосын тағам қорабы", desc: "Кафенің сатылмай қалған дәмді сендвичтері мен бәліштері", price: 2000, discount: 60, stock: 4, time: "21:00 - 22:30", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Әртүрлі", halal: true, delivery: false, instId: 7, instName: "«Ивушка» кафесі", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" },
+            { id: 118, name: "Плов шығыстық", category: "Ұлттық тағамдар", desc: "Қой еті, дәмі тіл үйіретін күріш, сары сәбіз", price: 2200, discount: 40, stock: 5, time: "16:00 - 19:00", expiryTime: "Бүгін 21:00-ге дейін", allergen: "Ет", halal: true, delivery: true, instId: 11, instName: "«Студент» асханасы", image: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80" },
+            { id: 119, name: "Пепперони пиццасы", category: "Пицца және фастфуд", desc: "Ащы пепперони шұжығы, моцарелла, томат соусы", price: 2900, discount: 50, stock: 3, time: "19:00 - 22:00", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Глютен, лактоза", halal: true, delivery: true, instId: 5, instName: "«Caravan» мейрамханасы", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=800&q=80" },
+            { id: 120, name: "Тәтті бәліш алма қосылған", category: "Нан-тоқаш", desc: "Балғын алма кесектері мен даршын қосылған бәліш", price: 1100, discount: 50, stock: 6, time: "17:00 - 20:00", expiryTime: "Бүгін 21:30-ге дейін", allergen: "Глютен, жұмыртқа", halal: true, delivery: false, instId: 14, instName: "«Колос» наубайханасы", image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80" },
+            { id: 121, name: "Қытырлақ картоп фри", category: "Пицца және фастфуд", desc: "Алтын түстес қытырлақ картоп және соус", price: 900, discount: 40, stock: 8, time: "18:00 - 22:00", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Жоқ", halal: true, delivery: true, instId: 2, instName: "«Акжайық» кафесі", image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80" },
+            { id: 122, name: "Дәмді окрошка", category: "Сусын", desc: "Көкөністер, жұмыртқа, айран немесе квас қосылған суық сорпа", price: 1300, discount: 40, stock: 4, time: "14:00 - 18:00", expiryTime: "Бүгін 20:00-ге дейін", allergen: "Лактоза, жұмыртқа", halal: true, delivery: true, instId: 4, instName: "«Ақжайық» асханасы", image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80" },
+            { id: 123, name: "Шоколадты кекс", category: "Десерт", desc: "Іші балқыған шоколадты кекс", price: 800, discount: 50, stock: 9, time: "17:00 - 21:00", expiryTime: "Бүгін 22:00-ге дейін", allergen: "Глютен, лактоза, жұмыртқа", halal: true, delivery: false, instId: 6, instName: "«Sweet House» кондитерлік дүкені", image: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?auto=format&fit=crop&w=800&q=80" },
+            { id: 124, name: "Қой етінен шашлык (1 порция)", category: "Дайын тағамдар", desc: "Шырынды шоққа пісірілген қой еті шашлығы, пиязбен", price: 2800, discount: 50, stock: 3, time: "19:00 - 21:30", expiryTime: "Бүгін 23:00-ге дейін", allergen: "Ет", halal: true, delivery: true, instId: 1, instName: "«Жібек жолы» мейрамханасы", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80" }
+        ];
+
+        let groceriesData = [
+            { id: 201, name: "«Петропавл» сүті 2.5%", category: "Сүт өнімдері", weight: "1 л", producer: "ПК «Молпродукт»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "+2°C...+6°C", prodDate: "2026-03-24", expiryDate: "2026-03-30", expiryDays: 3, price: 550, discount: 40, stock: 12, delivery: true, image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=800&q=80" },
+            { id: 202, name: "Балғын қаймақ 20%", category: "Сүт өнімдері", weight: "400 г", producer: "«Адай» ЖШС", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "+2°C...+4°C", prodDate: "2026-03-25", expiryDate: "2026-03-28", expiryDays: 1, price: 850, discount: 50, stock: 8, delivery: true, image: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=800&q=80" },
+            { id: 203, name: "Сиыр еті кесектері (жартылай фабрикат)", category: "Ет өнімдері", weight: "800 г", producer: "«ОралМяс»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "0°C...+2°C", prodDate: "2026-03-26", expiryDate: "2026-03-27", expiryDays: 0, price: 3200, discount: 60, stock: 5, delivery: true, image: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&w=800&q=80" },
+            { id: 204, name: "Пельмени «Домашние»", category: "Жартылай дайын өнімдер", weight: "900 г", producer: "«Береке»", store: "«Алтын алма» азық-түлік дүкені", address: "Гагарин көшесі, 12", storage: "-18°C", prodDate: "2026-02-10", expiryDate: "2026-04-10", expiryDays: 14, price: 2100, discount: 30, stock: 10, delivery: false, image: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?auto=format&fit=crop&w=800&q=80" },
+            { id: 205, name: "Балғын қызанақ", category: "Көкөністер", weight: "1 кг", producer: "КХ «Жер Ана»", store: "«Зеленый» минимаркеті", address: "Құрманғазы көшесі, 80", storage: "+8°C...+12°C", prodDate: "2026-03-24", expiryDate: "2026-03-29", expiryDays: 2, price: 1200, discount: 50, stock: 15, delivery: true, image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80" },
+            { id: 206, name: "Алма «Голден»", category: "Жемістер", weight: "1 кг", producer: "«Сая» бау-бақшасы", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "+4°C", prodDate: "2026-03-20", expiryDate: "2026-04-05", expiryDays: 8, price: 900, discount: 40, stock: 20, delivery: true, image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=800&q=80" },
+            { id: 207, name: "Қара бидай наны", category: "Нан-тоқаш", weight: "450 г", producer: "«Орал наны»", store: "«Нұр» азық-түлік дүкені", address: "С. Түгелбаев көшесі, 4", storage: "Құрғақ жерde", prodDate: "2026-03-26", expiryDate: "2026-03-28", expiryDays: 1, price: 300, discount: 50, stock: 9, delivery: false, image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80" },
+            { id: 208, name: "Тәтті шоколад плиткесі", category: "Тәттілер", weight: "100 г", producer: "«Рахат» АҚ", store: "«Достық» минимаркеті", address: "Достық даңғылы, 90", storage: "+18°C", prodDate: "2025-11-10", expiryDate: "2026-05-10", expiryDays: 43, price: 750, discount: 30, stock: 25, delivery: true, image: "https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=800&q=80" },
+            { id: 209, name: "Табиғи шырын «Апельсин» (1л)", category: "Сусындар", weight: "1 л", producer: "«RG Brands»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "+2°C...+20°C", prodDate: "2026-02-01", expiryDate: "2026-04-01", expiryDays: 4, price: 800, discount: 40, stock: 14, delivery: true, image: "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80" },
+            { id: 210, name: "Күріш «Басмати»", category: "Бакалея", weight: "900 г", producer: "«Лидл»", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "Құрғақ жерde", prodDate: "2025-10-01", expiryDate: "2026-10-01", expiryDays: 187, price: 1300, discount: 25, stock: 30, delivery: true, image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80" },
+            { id: 211, name: "Балаларға арналған алма пюресі", category: "Балалар тағамы", weight: "200 г", producer: "«ФрутоНяня»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "+2°C...+25°C", prodDate: "2025-12-15", expiryDate: "2026-03-29", expiryDays: 2, price: 500, discount: 50, stock: 11, delivery: true, image: "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?auto=format&fit=crop&w=800&q=80" },
+            { id: 212, name: "Азық-түлік жиынтығы №1 (Күнделікті)", category: "Азық-түлік жиынтығы", weight: "3.5 кг", producer: "«Дәмді сәт» серіктестері", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "Әртүрлі", prodDate: "2026-03-25", expiryDate: "2026-03-28", expiryDays: 1, price: 4500, discount: 50, stock: 6, delivery: true, image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80" },
+            { id: 213, name: "Ірімшік «Голландский» 45%", category: "Сүт өнімдері", weight: "300 г", producer: "«Арла»", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "+2°C...+6°C", prodDate: "2026-02-20", expiryDate: "2026-03-28", expiryDays: 1, price: 1400, discount: 50, stock: 7, delivery: true, image: "https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=800&q=80" },
+            { id: 214, name: "Тауық филесі (мұздатылмаған)", category: "Ет өнімдері", weight: "700 г", producer: "«Жайық Құс»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "0°C...+4°C", prodDate: "2026-03-25", expiryDate: "2026-03-27", expiryDays: 0, price: 2300, discount: 50, stock: 8, delivery: true, image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=800&q=80" },
+            { id: 215, name: "Көкөніс қоспасы (мұздатылған)", category: "Жартылай дайын өнімдер", weight: "400 г", producer: "«Айсберг»", store: "«Зеленый» минимаркеті", address: "Құрманғазы көшесі, 80", storage: "-18°C", prodDate: "2025-11-20", expiryDate: "2026-09-20", expiryDays: 175, price: 750, discount: 30, stock: 12, delivery: true, image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=800&q=80" },
+            { id: 216, name: "Балғын қияр", category: "Көкөністер", weight: "1 кг", producer: "«Жер Ана»", store: "«Алтын алма» азық-түлік дүкені", address: "Гагарин көшесі, 12", storage: "+6°C...+10°C", prodDate: "2026-03-25", expiryDate: "2026-03-29", expiryDays: 2, price: 1100, discount: 40, stock: 10, delivery: false, image: "https://images.unsplash.com/photo-1449300079323-02e20989d8a2?auto=format&fit=crop&w=800&q=80" },
+            { id: 217, name: "Банан", category: "Жемістер", weight: "1 кг", producer: "Экспорт", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "+12°C", prodDate: "2026-03-22", expiryDate: "2026-03-29", expiryDays: 2, price: 950, discount: 40, stock: 18, delivery: true, image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80" },
+            { id: 218, name: "Ақ нан (бәліш)", category: "Нан-тоқаш", weight: "400 г", producer: "«Колос»", store: "«Колос» наубайханасы", address: "Назарбаев даңғылы, 130", storage: "Құрғақ жерde", prodDate: "2026-03-26", expiryDate: "2026-03-28", expiryDays: 1, price: 250, discount: 50, stock: 14, delivery: false, image: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=800&q=80" },
+            { id: 219, name: "Мармелад жемісті", category: "Тәттілер", weight: "300 г", producer: "«Рахат»", store: "«Достық» минимаркеті", address: "Достық даңғылы, 90", storage: "+18°C", prodDate: "2026-01-15", expiryDate: "2026-05-15", expiryDays: 48, price: 650, discount: 30, stock: 16, delivery: true, image: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=800&q=80" },
+            { id: 220, name: "Қара шай «Пиала» (100 пак)", category: "Бакалея", weight: "200 г", producer: "«Unilever»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "Құрғақ жерde", prodDate: "2025-08-10", expiryDate: "2027-08-10", expiryDays: 500, price: 1400, discount: 20, stock: 22, delivery: true, image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80" },
+            { id: 221, name: "Йогурт питьевой 2.5%", category: "Сүт өнімдері", weight: "500 г", producer: "«Danone»", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "+2°C...+6°C", prodDate: "2026-03-23", expiryDate: "2026-03-29", expiryDays: 2, price: 600, discount: 50, stock: 10, delivery: true, image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80" },
+            { id: 222, name: "Шұжық «Сервелат»", category: "Ет өнімдері", weight: "400 г", producer: "«Уральский мясник»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "+2°C...+4°C", prodDate: "2026-03-20", expiryDate: "2026-03-30", expiryDays: 3, price: 1800, discount: 40, stock: 7, delivery: true, image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80" },
+            { id: 223, name: "Картоп", category: "Көкөністер", weight: "1 кг", producer: "КХ «Орал»", store: "«Зеленый» минимаркеті", address: "Құрманғазы көшесі, 80", storage: "+4°C...+8°C", prodDate: "2026-02-15", expiryDate: "2026-04-15", expiryDays: 19, price: 300, discount: 30, stock: 40, delivery: true, image: "https://images.unsplash.com/photo-1518977676601-b5ff82aba03c?auto=format&fit=crop&w=800&q=80" },
+            { id: 224, name: "Лимон", category: "Жемістер", weight: "500 г", producer: "Экспорт", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "+6°C", prodDate: "2026-03-10", expiryDate: "2026-04-10", expiryDays: 13, price: 700, discount: 30, stock: 15, delivery: true, image: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?auto=format&fit=crop&w=800&q=80" },
+            { id: 225, name: "Макарон «Спагетти»", category: "Бакалея", weight: "500 г", producer: "«Макфа»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "Құрғақ жерde", prodDate: "2025-11-01", expiryDate: "2027-11-01", expiryDays: 580, price: 650, discount: 25, stock: 28, delivery: true, image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=800&q=80" },
+            { id: 226, name: "Творог 9%", category: "Сүт өнімдері", weight: "350 г", producer: "«Молпродукт»", store: "«Дина» супермаркеті", address: "С. Датов көшесі, 16/1", storage: "+2°C...+6°C", prodDate: "2026-03-24", expiryDate: "2026-03-28", expiryDays: 1, price: 950, discount: 50, stock: 6, delivery: true, image: "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=800&q=80" },
+            { id: 227, name: "Азық-түлік жиынтығы №2 (Жеміс-көкөніс)", category: "Азық-түлік жиынтығы", weight: "4 кг", producer: "«Дәмді сәт»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "Балғын", prodDate: "2026-03-25", expiryDate: "2026-03-29", expiryDays: 2, price: 3800, discount: 50, stock: 5, delivery: true, image: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=800&q=80" },
+            { id: 228, name: "Газды су «Боржоми» (0.5л)", category: "Сусындар", weight: "0.5 л", producer: "IDS Borжоmi", store: "«Достық» минимаркеті", address: "Достық даңғылы, 90", storage: "+5°C...+20°C", prodDate: "2025-06-01", expiryDate: "2027-06-01", expiryDays: 450, price: 450, discount: 20, stock: 20, delivery: true, image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=800&q=80" },
+            { id: 229, name: "Жұмыртқа куриное С1 (10 дана)", category: "Сүт өнімдері", weight: "600 г", producer: "«Жайық Құс»", store: "«Анвар» супермаркеті", address: "Евразия даңғылы, 65", storage: "+2°C...+10°C", prodDate: "2026-03-20", expiryDate: "2026-04-10", expiryDays: 13, price: 750, discount: 30, stock: 15, delivery: true, image: "https://images.unsplash.com/photo-1516448704629-06c245c75467?auto=format&fit=crop&w=800&q=80" },
+            { id: 230, name: "Тоқаш мейіз қосылған", category: "Нан-тоқаш", weight: "300 г", producer: "«Колос»", store: "«Колос» наубайханасы", address: "Назарбаев даңғылы, 130", storage: "Құрғақ жерde", prodDate: "2026-03-26", expiryDate: "2026-03-28", expiryDays: 1, price: 400, discount: 50, stock: 8, delivery: false, image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80" }
+        ];
+
+        // Automatic removal of expired groceries (expiryDays < 0)
+        groceriesData = groceriesData.filter(g => g.expiryDays >= 0);
+
+        // State variables
+        let cart = JSON.parse(localStorage.getItem('damdi_cart')) || [];
+        let favorites = JSON.parse(localStorage.getItem('damdi_favorites')) || [101, 201];
+        let orders = JSON.parse(localStorage.getItem('damdi_orders')) || [];
+        let customProducts = JSON.parse(localStorage.getItem('damdi_custom_products')) || [];
+        let deliveryMethod = 'pickup'; // 'pickup' or 'delivery'
+        let leafletMap = null;
+        let mapMarkersLayer = null;
+
+        // Initialize App on Load
+        window.onload = function() {
+            // Check dark mode
+            if (localStorage.getItem('damdi_theme') === 'dark') {
+                document.documentElement.classList.add('dark');
             }
+            renderHomeFeatured();
+            renderFoods();
+            renderGroceries();
+            renderInstitutions();
+            renderCart();
+            renderOrders();
+            renderPartnerProducts();
+            renderFavorites();
+            updateCartBadge();
+            updateEcoStats();
         };
 
-        function selectSection(id) {
-            // Remove active state from all buttons
-            for (let i = 1; i <= 10; i++) {
-                const btn = document.getElementById('btn-' + i);
-                if (btn) {
-                    btn.classList.remove('border-electric-iris', 'bg-white/[0.08]');
-                    btn.classList.add('border-white/10', 'bg-white/[0.02]');
+        // Navigation Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (tabId === 'map') {
+                    setTimeout(() => {
+                        initLeafletMap();
+                    }, 200);
                 }
             }
+        }
 
-            // Add active state to selected button
-            const activeBtn = document.getElementById('btn-' + id);
-            if (activeBtn) {
-                activeBtn.classList.remove('border-white/10', 'bg-white/[0.02]');
-                activeBtn.classList.add('border-electric-iris', 'bg-white/[0.08]');
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.setItem('damdi_theme', 'dark');
+            } else {
+                localStorage.setItem('damdi_theme', 'light');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-2xl shadow-xl text-white text-sm font-bold flex items-center gap-3 transition transform translate-y-2 opacity-0 pointer-events-auto ${type === 'success' ? 'bg-brand' : 'bg-rose-600'}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'} text-lg"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- RENDER HOME FEATURED ---
+        function renderHomeFeatured() {
+            const grid = document.getElementById('home-featured-grid');
+            const allItems = [...foodsData, ...groceriesData].slice(0, 4);
+            grid.innerHTML = allItems.map(item => createCardHTML(item)).join('');
+        }
+
+        // --- RENDER FOODS ---
+        function renderFoods() {
+            const grid = document.getElementById('foods-grid');
+            const search = document.getElementById('food-search').value.toLowerCase();
+            const category = document.getElementById('food-category').value;
+
+            let filtered = [...foodsData, ...customProducts.filter(p => p.type === 'food')];
+            if (search) {
+                filtered = filtered.filter(i => i.name.toLowerCase().includes(search) || i.desc.toLowerCase().includes(search) || i.instName.toLowerCase().includes(search));
+            }
+            if (category !== 'all') {
+                filtered = filtered.filter(i => i.category === category);
             }
 
-            // Update content display
-            const data = sectionsData[id];
-            const contentDiv = document.getElementById('dynamic-content');
-            contentDiv.innerHTML = `
-                <div class="space-y-6 animate-fadeIn">
-                    <div class="flex items-center gap-3">
-                        <span class="px-3 py-1 rounded-full bg-electric-iris/20 text-electric-iris text-xs font-semibold uppercase tracking-wider">Бөлім ${id < 10 ? '0' + id : id}</span>
-                        <h3 class="text-2xl md:text-3xl font-normal text-white">${data.title}</h3>
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 font-semibold">Іздеу бойынша ешқандай тағам табылмады.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => createCardHTML(item)).join('');
+        }
+
+        function applyQuickFilter(filter) {
+            document.querySelectorAll('.quick-chip').forEach(btn => btn.classList.remove('bg-brand', 'text-white', 'shadow'));
+            event.target.classList.add('bg-brand', 'text-white', 'shadow');
+            
+            let filtered = [...foodsData, ...customProducts.filter(p => p.type === 'food')];
+            if (filter === 'max_discount') {
+                filtered.sort((a, b) => b.discount - a.discount);
+            } else if (filter === 'under_1000') {
+                filtered = filtered.filter(i => Math.round(i.price * (1 - i.discount/100)) <= 1000);
+            } else if (filter === 'last_portions') {
+                filtered = filtered.filter(i => i.stock <= 3);
+            } else if (filter === 'halal') {
+                filtered = filtered.filter(i => i.halal);
+            } else if (filter === 'delivery') {
+                filtered = filtered.filter(i => i.delivery);
+            }
+
+            const grid = document.getElementById('foods-grid');
+            grid.innerHTML = filtered.map(item => createCardHTML(item)).join('');
+        }
+
+        // --- RENDER GROCERIES ---
+        function renderGroceries() {
+            const grid = document.getElementById('groceries-grid');
+            const search = document.getElementById('grocery-search').value.toLowerCase();
+            const category = document.getElementById('grocery-category').value;
+
+            let filtered = [...groceriesData, ...customProducts.filter(p => p.type === 'grocery')];
+            if (search) {
+                filtered = filtered.filter(i => i.name.toLowerCase().includes(search) || i.store.toLowerCase().includes(search));
+            }
+            if (category !== 'all') {
+                filtered = filtered.filter(i => i.category === category);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 font-semibold">Іздеу бойынша ешқандай азық-түлік табылмады.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => createGroceryCardHTML(item)).join('');
+        }
+
+        // --- CARD HTML BUILDERS ---
+        function createCardHTML(item) {
+            const newPrice = Math.round(item.price * (1 - item.discount / 100));
+            const savedAmount = item.price - newPrice;
+            const isFav = favorites.includes(item.id);
+
+            // Expiry indicator color for grocery or time for food
+            return `
+                <div class="bg-white dark:bg-slate-800 rounded-3xl border border-emerald-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-lg transition group">
+                    <div class="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-900">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/105C44/FFFFFF?text=${encodeURIComponent(item.name)}';" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute top-3 left-3 bg-rose-600 text-white font-black text-xs px-3 py-1.5 rounded-xl shadow">
+                            -${item.discount}%
+                        </div>
+                        <button onclick="toggleFavorite(${item.id})" class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/90 dark:bg-slate-900/90 flex items-center justify-center text-slate-700 dark:text-slate-200 shadow hover:scale-110 transition">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart ${isFav ? 'text-rose-600' : ''}"></i>
+                        </button>
+                        <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1 rounded-lg">
+                            <i class="fa-solid fa-store mr-1"></i> ${item.instName || item.store}
+                        </div>
                     </div>
-                    <p class="text-silver-mist text-lg font-extralight leading-relaxed whitespace-pre-line">
-                        ${data.desc}
-                    </p>
-                    <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10">
-                        <h4 class="text-xs uppercase tracking-wider text-saffron-spark font-semibold mb-2">Тапсырма / нұсқау:</h4>
-                        <p class="text-sm text-ash-gray whitespace-pre-line">${data.instruction}</p>
+                    <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs font-bold text-brand dark:text-emerald-400">
+                                <span>${item.category}</span>
+                                <span><i class="fa-solid fa-box mr-1"></i> Қалдығы: ${item.stock}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-snug">${item.name}</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2">${item.desc || item.producer}</p>
+                        </div>
+                        <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 line-through">${item.price} ₸</span>
+                                    <div class="text-xl font-black text-slate-900 dark:text-white">${newPrice} ₸</div>
+                                </div>
+                                <span class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-lg">Үнем: ${savedAmount} ₸</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="openProductModal(${item.id})" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 transition">
+                                    Толығырақ
+                                </button>
+                                <button onclick="addToCart(${item.id})" class="flex-1 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-brand-light transition shadow-md shadow-brand/20 flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-basket-shopping"></i> Себетке
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
-        const quotes = [
-            { text: "«Адам баласы адам баласынан ақыл, ғылым, ар, мінез деген нәрселермен озады.»", ref: "Абайдың он жетінші қара сөзі" },
-            { text: "«Арсыздық — өнер емес, әрбір істің өз жөні бар.»", ref: "Абайдың қара сөздерінен" },
-            { text: "«Бәрін біл, босқа жүрме, мақтан қума.»", ref: "Абай өлеңдерінен" },
-            { text: "«Ғылымды іздеп, дүниені көздеп, екі жаққа жол тартпа.»", ref: "Абайдың отыз сегізінші қара сөзі" },
-            { text: "«Жалындап жанған жүрек қана әлемді нұрландыра алады.»", ref: "Абайдың философиялық толғауларынан" }
-        ];
+        function createGroceryCardHTML(item) {
+            const newPrice = Math.round(item.price * (1 - item.discount / 100));
+            const savedAmount = item.price - newPrice;
+            const isFav = favorites.includes(item.id);
 
-        function openRandomQuote() {
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-            const q = quotes[randomIndex];
-            document.getElementById('quote-text').innerText = q.text;
-            document.querySelector('#quote-text + p').innerText = "— " + q.ref;
+            // Color indicator based on expiryDays
+            let indicatorColor = 'bg-emerald-500';
+            let indicatorText = `${item.expiryDays} күн қалды`;
+            if (item.expiryDays <= 0) {
+                indicatorColor = 'bg-rose-500';
+                indicatorText = '24 сағаттан аз';
+            } else if (item.expiryDays <= 3) {
+                indicatorColor = 'bg-amber-500';
+                indicatorText = `${item.expiryDays} күн қалды`;
+            }
+
+            return `
+                <div class="bg-white dark:bg-slate-800 rounded-3xl border border-emerald-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-lg transition group">
+                    <div class="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-900">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/105C44/FFFFFF?text=${encodeURIComponent(item.name)}';" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute top-3 left-3 bg-rose-600 text-white font-black text-xs px-3 py-1.5 rounded-xl shadow">
+                            -${item.discount}%
+                        </div>
+                        <div class="absolute top-3 right-14 bg-slate-900/80 backdrop-blur-md text-white text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+                            <span class="w-2.5 h-2.5 rounded-full ${indicatorColor}"></span>
+                            <span class="font-bold">${indicatorText}</span>
+                        </div>
+                        <button onclick="toggleFavorite(${item.id})" class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/90 dark:bg-slate-900/90 flex items-center justify-center text-slate-700 dark:text-slate-200 shadow hover:scale-110 transition">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart ${isFav ? 'text-rose-600' : ''}"></i>
+                        </button>
+                        <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1 rounded-lg">
+                            <i class="fa-solid fa-shop mr-1"></i> ${item.store}
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs font-bold text-brand dark:text-emerald-400">
+                                <span>${item.category} (${item.weight})</span>
+                                <span>Қалдығы: ${item.stock}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-snug">${item.name}</h3>
+                            <p class="text-xs text-slate-500">Өндіруші: ${item.producer} | Жар. мерзімі: ${item.expiryDate}</p>
+                        </div>
+                        <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 line-through">${item.price} ₸</span>
+                                    <div class="text-xl font-black text-slate-900 dark:text-white">${newPrice} ₸</div>
+                                </div>
+                                <span class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-lg">Үнем: ${savedAmount} ₸</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="openProductModal(${item.id})" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 transition">
+                                    Толығырақ
+                                </button>
+                                <button onclick="addToCart(${item.id})" class="flex-1 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-brand-light transition shadow-md shadow-brand/20 flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-basket-shopping"></i> Себетке
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
-        function scrollToSections() {
-            document.getElementById('sections').scrollIntoView({ behavior: 'smooth' });
+        function filterFoods() { renderFoods(); }
+        function filterGroceries() { renderGroceries(); }
+
+        // --- INSTITUTIONS ---
+        function renderInstitutions() {
+            const grid = document.getElementById('institutions-grid');
+            const filter = document.getElementById('inst-filter').value;
+            let list = institutionsData;
+            if (filter !== 'all') {
+                list = list.filter(i => i.category === filter);
+            }
+            grid.innerHTML = list.map(inst => `
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-4 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-brand dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700 px-3 py-1 rounded-xl">${inst.category}</span>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-2">${inst.name}</h3>
+                        </div>
+                        <div class="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 text-amber-600 px-2.5 py-1 rounded-xl font-bold text-xs">
+                            <i class="fa-solid fa-star"></i> ${inst.rating}
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brand"></i> <span>${inst.address} (Орал қ.)</span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brand"></i> <span>${inst.hours}</span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-brand"></i> <span>${inst.phone}</span></div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                        <span class="text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/30 px-2.5 py-1 rounded-xl">Жеңілдік: ${inst.maxDiscount}% дейін</span>
+                        <button onclick="focusMapMarker(${inst.lat}, ${inst.lng})" class="px-4 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-light transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-map"></i> Картадан көру
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Initialize with section 1 on load
-        window.onload = function() {
-            selectSection(1);
-        };
+        // --- LEAFLET MAP ---
+        function initLeafletMap() {
+            if (!leafletMap) {
+                // Uralsk center coordinates: 51.2330, 51.3650
+                leafletMap = L.map('leaflet-map').setView([51.2330, 51.3650], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(leafletMap);
+                mapMarkersLayer = L.layerGroup().addTo(leafletMap);
+            }
+            updateMapMarkers();
+            setTimeout(() => { leafletMap.invalidateSize(); }, 250);
+        }
+
+        function updateMapMarkers() {
+            if (!mapMarkersLayer) return;
+            mapMarkersLayer.clearLayers();
+            const filterType = document.getElementById('map-filter-type').value;
+
+            institutionsData.forEach(inst => {
+                if (filterType !== 'all' && inst.category !== filterType) return;
+
+                const marker = L.marker([inst.lat, inst.lng]);
+                const popupContent = `
+                    <div style="font-family: 'Inter', sans-serif; padding: 4px; max-width: 200px;">
+                        <span style="font-size: 10px; font-weight: bold; color: #105C44; background: #E6F4EA; padding: 2px 6px; border-radius: 4px;">${inst.category}</span>
+                        <h4 style="font-size: 14px; font-weight: bold; margin: 6px 0 4px 0; color: #1E293B;">${inst.name}</h4>
+                        <p style="font-size: 12px; color: #64748B; margin: 0 0 8px 0;">${inst.address}</p>
+                        <div style="font-size: 11px; font-weight: bold; color: #D97706; margin-bottom: 8px;">Ең жоғары жеңілдік: ${inst.maxDiscount}%</div>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=${inst.lat},${inst.lng}" target="_blank" style="display: block; text-align: center; background: #105C44; color: white; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; text-decoration: none;">Бағытты ашу</a>
+                    </div>
+                `;
+                marker.bindPopup(popupContent);
+                mapMarkersLayer.addLayer(marker);
+            });
+        }
+
+        function locateUser() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    if (leafletMap) {
+                        leafletMap.setView([lat, lng], 15);
+                        L.marker([lat, lng]).addTo(leafletMap).bindPopup("Сіздің орналасқан жеріңіз").openPopup();
+                        showToast("Сіздің орналасқан жеріңіз картада көрсетілді");
+                    }
+                }, () => {
+                    showToast("Орналасқан жерді анықтау мүмкін болмады", "error");
+                });
+            } else {
+                showToast("Браузер геолацияны қолдамайды", "error");
+            }
+        }
+
+        function focusMapMarker(lat, lng) {
+            switchTab('map');
+            setTimeout(() => {
+                if (leafletMap) {
+                    leafletMap.setView([lat, lng], 16);
+                }
+            }, 300);
+        }
+
+        // --- PRODUCT DETAILS MODAL ---
+        function openProductModal(id) {
+            const all = [...foodsData, ...groceriesData, ...customProducts];
+            const item = all.find(i => i.id === id);
+            if (!item) return;
+
+            const newPrice = Math.round(item.price * (1 - item.discount / 100));
+            const savedAmount = item.price - newPrice;
+
+            document.getElementById('modal-product-content').innerHTML = `
+                <div class="relative h-64 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900">
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-rose-600 text-white font-black text-sm px-3 py-1.5 rounded-xl">-${item.discount}%</div>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-brand dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700 px-3 py-1 rounded-xl">${item.category}</span>
+                        <span class="text-xs font-bold text-slate-500"><i class="fa-solid fa-store mr-1"></i> ${item.instName || item.store}</span>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white">${item.name}</h2>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${item.desc || item.producer + ' | Жар. мерзімі: ' + item.expiryDate}</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 bg-emerald-50/50 dark:bg-slate-700/50 p-4 rounded-2xl text-xs font-semibold">
+                        <div>Қалған саны: <span class="font-bold text-slate-900 dark:text-white">${item.stock}</span></div>
+                        <div>Алып кету аралығы: <span class="font-bold text-slate-900 dark:text-white">${item.time || 'Жұмыс уақытында'}</span></div>
+                        <div>Аллергендер: <span class="font-bold text-slate-900 dark:text-white">${item.allergen || 'Жоқ'}</span></div>
+                        <div>Жеткізу: <span class="font-bold text-slate-900 dark:text-white">${item.delivery ? 'Бар' : 'Тек алып кету'}</span></div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <div>
+                            <span class="text-xs text-slate-400 line-through">${item.price} ₸</span>
+                            <div class="text-2xl font-black text-slate-900 dark:text-white">${newPrice} ₸</div>
+                        </div>
+                        <button onclick="addToCart(${item.id}); closeProductModal();" class="px-6 py-3 rounded-2xl bg-brand text-white font-bold hover:bg-brand-light transition shadow-lg shadow-brand/20 flex items-center gap-2">
+                            <i class="fa-solid fa-basket-shopping"></i> Себетке қосу
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        // --- CART & CHECKOUT ---
+        function addToCart(id) {
+            const all = [...foodsData, ...groceriesData, ...customProducts];
+            const item = all.find(i => i.id === id);
+            if (!item) return;
+
+            const existing = cart.find(c => c.id === id);
+            if (existing) {
+                if (existing.qty < item.stock) {
+                    existing.qty++;
+                    showToast(`Себеттегі саны артты: ${item.name}`);
+                } else {
+                    showToast("Қалған қордан артық таңдауға болмайды!", "error");
+                    return;
+                }
+            } else {
+                cart.push({ ...item, qty: 1 });
+                showToast(`Себетке қосылды: ${item.name}`);
+            }
+            saveCart();
+            updateCartBadge();
+            renderCart();
+        }
+
+        function updateCartQty(id, delta) {
+            const cartItem = cart.find(c => c.id === id);
+            if (!cartItem) return;
+
+            const all = [...foodsData, ...groceriesData, ...customProducts];
+            const item = all.find(i => i.id === id);
+
+            cartItem.qty += delta;
+            if (cartItem.qty <= 0) {
+                cart = cart.filter(c => c.id !== id);
+            } else if (item && cartItem.qty > item.stock) {
+                cartItem.qty = item.stock;
+                showToast("Қалған қор шегіне жетті", "error");
+            }
+            saveCart();
+            updateCartBadge();
+            renderCart();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            saveCart();
+            updateCartBadge();
+            renderCart();
+            showToast("Өнім себеттен өшірілді");
+        }
+
+        function saveCart() {
+            localStorage.setItem('damdi_cart', JSON.stringify(cart));
+        }
+
+        function updateCartBadge() {
+            const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+            document.getElementById('cart-badge').innerText = totalQty;
+        }
+
+        function setDeliveryMethod(method) {
+            deliveryMethod = method;
+            const btnPickup = document.getElementById('method-pickup');
+            const btnDelivery = document.getElementById('method-delivery');
+            const form = document.getElementById('delivery-form');
+
+            if (method === 'pickup') {
+                btnPickup.className = 'py-2.5 rounded-xl font-bold text-sm bg-brand text-white transition shadow-sm';
+                btnDelivery.className = 'py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-300 transition';
+                form.classList.add('hidden');
+            } else {
+                btnDelivery.className = 'py-2.5 rounded-xl font-bold text-sm bg-brand text-white transition shadow-sm';
+                btnPickup.className = 'py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-300 transition';
+                form.classList.remove('hidden');
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items-container');
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white dark:bg-slate-800 p-12 rounded-3xl border border-emerald-100 dark:border-slate-700 text-center space-y-4">
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-slate-700 text-brand dark:text-emerald-400 text-2xl flex items-center justify-center mx-auto">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Себетіңіз бос</h3>
+                        <p class="text-sm text-slate-500">Әлі ешқандай өнім қоспадыңыз. Каталогтан дәмді тағам немесе азық-түлік таңдаңыз.</p>
+                        <button onclick="switchTab('foods')" class="px-6 py-3 rounded-xl bg-brand text-white font-bold text-sm hover:bg-brand-light transition">Тағамдарға өту</button>
+                    </div>
+                `;
+                document.getElementById('cart-subtotal').innerText = '0 ₸';
+                document.getElementById('cart-discount').innerText = '0 ₸';
+                document.getElementById('cart-delivery-fee').innerText = '0 ₸';
+                document.getElementById('cart-total').innerText = '0 ₸';
+                document.getElementById('cart-saved-total').innerText = '0 ₸';
+                return;
+            }
+
+            container.innerHTML = cart.map(item => {
+                const newPrice = Math.round(item.price * (1 - item.discount / 100));
+                return `
+                    <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-emerald-100 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-4 shadow-sm">
+                        <img src="${item.image}" alt="${item.name}" class="w-24 h-24 rounded-2xl object-cover">
+                        <div class="flex-grow space-y-1 text-center sm:text-left">
+                            <span class="text-xs font-bold text-brand dark:text-emerald-400">${item.instName || item.store}</span>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">${item.name}</h3>
+                            <div class="text-sm font-black text-slate-900 dark:text-white">${newPrice} ₸ <span class="text-xs text-slate-400 line-through font-normal">${item.price} ₸</span></div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1">
+                                <button onclick="updateCartQty(${item.id}, -1)" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center font-bold text-sm hover:bg-slate-200 transition">-</button>
+                                <span class="w-10 text-center font-bold text-sm">${item.qty}</span>
+                                <button onclick="updateCartQty(${item.id}, 1)" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center font-bold text-sm hover:bg-slate-200 transition">+</button>
+                            </div>
+                            <button onclick="removeFromCart(${item.id})" class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 flex items-center justify-center hover:bg-rose-100 transition">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Calculate totals
+            let subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+            let totalNew = cart.reduce((sum, i) => sum + Math.round(i.price * (1 - i.discount / 100)) * i.qty, 0);
+            let discountSum = subtotal - totalNew;
+
+            // Delivery fee calculation: 500-1500 ₸ based on unique institutions, free if > 5000 ₸ per institution
+            let deliveryFee = 0;
+            if (deliveryMethod === 'delivery') {
+                const instIds = [...new Set(cart.map(i => i.instId || 1))];
+                instIds.forEach(() => {
+                    deliveryFee += (totalNew >= 5000 ? 0 : 800);
+                });
+            }
+
+            let finalTotal = totalNew + deliveryFee;
+
+            document.getElementById('cart-subtotal').innerText = `${subtotal} ₸`;
+            document.getElementById('cart-discount').innerText = `-${discountSum} ₸`;
+            document.getElementById('cart-delivery-fee').innerText = `${deliveryFee} ₸`;
+            document.getElementById('cart-total').innerText = `${finalTotal} ₸`;
+            document.getElementById('cart-saved-total').innerText = `${discountSum} ₸`;
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showToast("Себетіңіз бос!", "error");
+                return;
+            }
+            let totalNew = cart.reduce((sum, i) => sum + Math.round(i.price * (1 - i.discount / 100)) * i.qty, 0);
+            let deliveryFee = deliveryMethod === 'delivery' && totalNew < 5000 ? 800 * [...new Set(cart.map(i => i.instId || 1))].length : 0;
+            document.getElementById('modal-pay-total').innerText = `${totalNew + deliveryFee} ₸`;
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function processPayment() {
+            const card = document.getElementById('pay-card').value;
+            const expiry = document.getElementById('pay-expiry').value;
+            const cvv = document.getElementById('pay-cvv').value;
+
+            if (!card || !expiry || !cvv) {
+                showToast("Барлық төлем өрістерін толтырыңыз!", "error");
+                return;
+            }
+
+            closeCheckoutModal();
+
+            // Create Order
+            let totalNew = cart.reduce((sum, i) => sum + Math.round(i.price * (1 - i.discount / 100)) * i.qty, 0);
+            let deliveryFee = deliveryMethod === 'delivery' && totalNew < 5000 ? 800 * [...new Set(cart.map(i => i.instId || 1))].length : 0;
+            let finalTotal = totalNew + deliveryFee;
+
+            const newOrder = {
+                id: 'DS-' + Math.floor(100000 + Math.random() * 900000),
+                date: new Date().toLocaleDateString('kk-KZ') + ' ' + new Date().toLocaleTimeString('kk-KZ', {hour: '2-digit', minute:'2-digit'}),
+                method: deliveryMethod === 'pickup' ? 'Өзім барып аламын' : 'Жеткізу',
+                items: [...cart],
+                total: finalTotal,
+                code: Math.floor(100000 + Math.random() * 900000).toString(),
+                status: deliveryMethod === 'pickup' ? 'Дайындалуда (Алу коды берілді)' : 'Курьер жолда (Симуляция)',
+                address: deliveryMethod === 'delivery' ? document.getElementById('del-address').value : 'Мекемеден алу'
+            };
+
+            orders.unshift(newOrder);
+            localStorage.setItem('damdi_orders', JSON.stringify(orders));
+
+            // Clear cart
+            cart = [];
+            saveCart();
+            updateCartBadge();
+            renderCart();
+            renderOrders();
+            updateEcoStats();
+
+            // Show receipt
+            showReceiptModal(newOrder);
+        }
+
+        function showReceiptModal(order) {
+            const content = document.getElementById('receipt-content');
+            content.innerHTML = `
+                <div class="text-center font-bold border-b border-dashed border-slate-300 dark:border-slate-700 pb-3">
+                    <div class="text-lg">«ДӘМДІ СӘТ» ЭЛЕКТРОНДЫ ЧЕК</div>
+                    <div class="text-xs text-slate-500">Тапсырыс №: ${order.id}</div>
+                    <div class="text-xs text-slate-500">Күні: ${order.date}</div>
+                </div>
+                <div class="space-y-2 py-2">
+                    ${order.items.map(i => `
+                        <div class="flex justify-between text-xs">
+                            <span>${i.name} (x${i.qty})</span>
+                            <span>${Math.round(i.price * (1 - i.discount / 100)) * i.qty} ₸</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="border-t border-dashed border-slate-300 dark:border-slate-700 pt-3 space-y-1 text-xs">
+                    <div class="flex justify-between font-bold">
+                        <span>Тәсілі:</span>
+                        <span>${order.method}</span>
+                    </div>
+                    ${order.method === 'Өзім барып аламын' ? `
+                        <div class="flex justify-between font-bold text-amber-600">
+                            <span>Алу коды:</span>
+                            <span class="text-base">${order.code}</span>
+                        </div>
+                    ` : `
+                        <div class="flex justify-between">
+                            <span>Мекенжай:</span>
+                            <span>${order.address}</span>
+                        </div>
+                    `}
+                    <div class="flex justify-between font-black text-sm pt-2">
+                        <span>Барлығы төленген:</span>
+                        <span>${order.total} ₸</span>
+                    </div>
+                </div>
+                <div class="text-center text-[10px] text-slate-400 pt-2">
+                    Бұл төлем үлгілік режимде орындалды. Нақты ақша алынбады.
+                </div>
+            `;
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        // --- ORDERS & PROFILE ---
+        function renderOrders() {
+            const list = document.getElementById('orders-list');
+            if (orders.length === 0) {
+                list.innerHTML = `<div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 text-center text-slate-500">Әлі ешқандай тапсырыс бермегенсіз.</div>`;
+                return;
+            }
+
+            list.innerHTML = orders.map(ord => `
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-emerald-100 dark:border-slate-700 space-y-4 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100 dark:border-slate-700">
+                        <div>
+                            <span class="text-xs font-bold text-brand dark:text-emerald-400">${ord.id}</span>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">${ord.method}</h3>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 text-xs font-bold">${ord.status}</span>
+                            <span class="text-sm font-black text-slate-900 dark:text-white">${ord.total} ₸</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-xs font-semibold text-slate-500">Тауарлар:</div>
+                        <div class="flex flex-wrap gap-2">
+                            ${ord.items.map(i => `<span class="px-3 py-1 rounded-xl bg-emerald-50 dark:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300">${i.name} (x${i.qty})</span>`).join('')}
+                        </div>
+                    </div>
+                    ${ord.code ? `
+                        <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-amber-700 dark:text-amber-400">Мекемеден алып кету коды:</div>
+                                <div class="text-2xl font-black text-amber-800 dark:text-amber-300 tracking-wider">${ord.code}</div>
+                            </div>
+                            <div class="text-right text-xs text-slate-500">Кассаға осы кодты көрсетіңіз</div>
+                        </div>
+                    ` : ''}
+                    <div class="flex items-center justify-between pt-2 text-xs text-slate-400">
+                        <span>Күні: ${ord.date}</span>
+                        <div class="flex gap-2">
+                            <button onclick="repeatOrder('${ord.id}')" class="px-4 py-2 rounded-xl bg-brand text-white font-bold hover:bg-brand-light transition">Қайталау</button>
+                            <button onclick="rateOrder()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold hover:bg-slate-200 transition">Баға беру</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function repeatOrder(id) {
+            const ord = orders.find(o => o.id === id);
+            if (!ord) return;
+            cart = [...ord.items];
+            saveCart();
+            updateCartBadge();
+            switchTab('cart');
+            showToast("Тапсырыс себетке қосылды");
+        }
+
+        function rateOrder() {
+            showToast("Бағаңыз үшін рақмет! Мекеме рейтингі жаңартылды.");
+        }
+
+        function toggleFavorite(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+                showToast("Таңдаулылардан өшірілді");
+            } else {
+                favorites.push(id);
+                showToast("Таңдаулыларға қосылды");
+            }
+            localStorage.setItem('damdi_favorites', JSON.stringify(favorites));
+            renderFavorites();
+            renderFoods();
+            renderGroceries();
+        }
+
+        function renderFavorites() {
+            const grid = document.getElementById('favorites-grid');
+            const all = [...foodsData, ...groceriesData, ...customProducts];
+            const favItems = all.filter(i => favorites.includes(i.id));
+
+            if (favItems.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-6 text-center text-slate-500 text-sm">Таңдаулы өнімдер әлі жоқ.</div>`;
+                return;
+            }
+
+            grid.innerHTML = favItems.map(item => `
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl flex items-center gap-4">
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-xl object-cover">
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">${item.name}</h4>
+                        <div class="text-xs text-brand font-bold">${Math.round(item.price * (1 - item.discount / 100))} ₸</div>
+                    </div>
+                    <button onclick="toggleFavorite(${item.id})" class="text-rose-600 hover:scale-110 transition"><i class="fa-solid fa-heart"></i></button>
+                </div>
+            `).join('');
+        }
+
+        // --- ECO STATS ---
+        function updateEcoStats() {
+            const totalSavedMeals = 4820 + orders.reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.qty, 0), 0);
+            const totalSavedMoney = 12500000 + orders.reduce((sum, o) => sum + o.total, 0);
+            const totalCo2 = (9.4 + (totalSavedMeals * 0.002)).toFixed(1);
+            const totalWater = totalSavedMeals * 450;
+
+            document.getElementById('stat-meals').innerText = totalSavedMeals.toLocaleString();
+            document.getElementById('stat-saved').innerText = (totalSavedMoney / 1000000).toFixed(1) + ' млн';
+            document.getElementById('stat-co2').innerText = totalCo2;
+
+            document.getElementById('eco-saved-meals').innerText = totalSavedMeals.toLocaleString();
+            document.getElementById('eco-co2').innerText = totalCo2 + ' т';
+            document.getElementById('eco-water').innerText = totalWater.toLocaleString() + ' л';
+
+            document.getElementById('profile-saved-money').innerText = (18450 + orders.reduce((sum, o) => sum + Math.round(o.total * 0.4), 0)).toLocaleString() + ' ₸';
+        }
+
+        // --- PARTNER PANEL ---
+        function openAddProductModal() {
+            document.getElementById('form-name').value = '';
+            document.getElementById('form-image').value = '';
+            document.getElementById('form-category').value = '';
+            document.getElementById('form-price').value = '';
+            document.getElementById('form-discount').value = '50';
+            document.getElementById('form-stock').value = '5';
+            document.getElementById('form-expiry').value = '';
+            document.getElementById('form-desc').value = '';
+            document.getElementById('product-form-modal').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('product-form-modal').classList.add('hidden');
+        }
+
+        function savePartnerProduct() {
+            const type = document.getElementById('form-type').value;
+            const name = document.getElementById('form-name').value;
+            const image = document.getElementById('form-image').value || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
+            const category = document.getElementById('form-category').value || 'Дайын тағамдар';
+            const price = parseFloat(document.getElementById('form-price').value);
+            const discount = parseInt(document.getElementById('form-discount').value);
+            const stock = parseInt(document.getElementById('form-stock').value);
+            const expiry = document.getElementById('form-expiry').value;
+            const desc = document.getElementById('form-desc').value;
+
+            if (!name || !price || !expiry) {
+                showToast("Міндетті өрістерді толтырыңыз!", "error");
+                return;
+            }
+
+            // Check if expired
+            const expiryDate = new Date(expiry);
+            const today = new Date();
+            const diffDays = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                showToast("Мерзімі өткен өнімді орналастыруға болмайды!", "error");
+                return;
+            }
+
+            const newProd = {
+                id: Date.now(),
+                type: type,
+                name: name,
+                category: category,
+                price: price,
+                discount: discount,
+                stock: stock,
+                expiryDate: expiry,
+                expiryDays: diffDays,
+                desc: desc,
+                producer: 'Серіктес мекеме',
+                store: '«Жібек жолы» мейрамханасы',
+                instName: '«Жібек жолы» мейрамханасы',
+                image: image,
+                delivery: true,
+                halal: true,
+                allergen: 'Стандартты'
+            };
+
+            customProducts.unshift(newProd);
+            localStorage.setItem('damdi_custom_products', JSON.stringify(customProducts));
+
+            if (type === 'food') {
+                foodsData.unshift(newProd);
+                renderFoods();
+            } else {
+                groceriesData.unshift(newProd);
+                renderGroceries();
+            }
+
+            closeAddProductModal();
+            renderPartnerProducts();
+            showToast("Өнім сәтті қосылды және каталогта жарияланды!");
+        }
+
+        function renderPartnerProducts() {
+            const list = document.getElementById('partner-products-list');
+            if (customProducts.length === 0) {
+                list.innerHTML = `<div class="text-center text-slate-500 py-6 text-sm">Әлі ешқандай өнім қоспадыңыз.</div>`;
+                return;
+            }
+
+            list.innerHTML = customProducts.map(prod => `
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-emerald-100 dark:border-slate-700">
+                    <div class="flex items-center gap-4">
+                        <img src="${prod.image}" alt="${prod.name}" class="w-16 h-16 rounded-xl object-cover">
+                        <div>
+                            <span class="text-xs font-bold text-brand dark:text-emerald-400">${prod.category}</span>
+                            <h4 class="font-bold text-slate-900 dark:text-white">${prod.name}</h4>
+                            <div class="text-xs text-slate-500">Бағасы: ${prod.price} ₸ | Жеңілдік: ${prod.discount}% | Қалдығы: ${prod.stock}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="deletePartnerProduct(${prod.id})" class="px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 font-bold text-xs hover:bg-rose-100 transition">Өшіру</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePartnerProduct(id) {
+            customProducts = customProducts.filter(p => p.id !== id);
+            foodsData = foodsData.filter(p => p.id !== id);
+            groceriesData = groceriesData.filter(p => p.id !== id);
+            localStorage.setItem('damdi_custom_products', JSON.stringify(customProducts));
+            renderPartnerProducts();
+            renderFoods();
+            renderGroceries();
+            showToast("Өнім өшірілді");
+        }
     </script>
 </body>
 </html>
